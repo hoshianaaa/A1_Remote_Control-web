@@ -1,5 +1,5 @@
-const signalingUrl = 'wss://ayame-lite.shiguredo.jp/signaling';
-let roomId = 'ayame-sdk-test';
+const signalingUrl = 'ws://192.168.1.234:3000/signaling';
+let roomId = 'hoshina';
 let clientId = null;
 let videoCodec = null;
 let audioCodec = null;

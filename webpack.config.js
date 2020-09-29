@@ -1,7 +1,7 @@
 const { WebpackPluginServe: Serve } = require('webpack-plugin-serve');
 
 const serve = new Serve({
-  host: 'localhost',
+  host: '192.168.1.234',
   port: 5000,
   static: ['./'],
   open: true,

@@ -1,0 +1,175 @@
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>Ayame RecvOnly Sample</title>
+        <link rel="stylesheet" href="https://cdn.rawgit.com/Chalarangelo/mini.css/v3.0.1/dist/mini-default.min.css">
+    </head>
+    <body>
+      <header class="sticky row">
+        <h4>A1 Remote Control</h4>
+      </header>
+      <div>
+        <p>Robot ID
+        <input id="roomIdInput" type="text" value=""></input>
+        </p>
+        <p>クライアントID
+        <input id="clientIdInput" disabled type="text" value=""></input>
+        </p>
+        <button onclick="sendDataL();">left(s)</button>
+        <button onclick="sendDataF();">forward(e)</button>
+        <button onclick="sendDataR();">right(f)</button>
+        <button onclick="sendDataB();">back(d)</button>
+        <button onclick="sendDataRR();">rotate right(l)</button>
+        <button onclick="sendDataRL();">rotate left(j)</button>
+	</p>
+        <button onclick="startConn();">接続</button>
+        <button onclick="disconnect();">切断</button>
+      </div>
+
+      <div style="float:center;">
+	<p>
+        <video id="remote-video" autoplay playsinline controls style="width: 400px; height: 300px; border: 1px solid black;"></video>
+	</P>
+        <video id="remote-video1" autoplay playsinline controls style="width: 300px; height: 200px; border: 1px solid black;"></video>
+        <video id="remote-video2" autoplay playsinline controls style="width: 300px; height: 200px; border: 1px solid black;"></video>
+        <video id="remote-video3" autoplay playsinline controls style="width: 300px; height: 200px; border: 1px solid black;"></video>
+      </div>
+
+      <script src="https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2020.2.1/dist/ayame.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.7.0/qs.min.js"></script>
+      <script src="./main.js"></script>
+      <script type="text/javascript">
+        const options = Ayame.defaultOptions;
+        options.clientId = clientId ? clientId : options.clientId;
+        if (signalingKey) {
+          options.signalingKey = signalingKey;
+        }
+        options.video.direction = 'recvonly';
+        let conn;
+        const disconnect = () => {
+          if (conn) {
+            conn.disconnect();
+          }
+        }
+        let dataChannel = null;
+        const label = 'dataChannel';
+        const startConn = async () => {
+          options.video.codec = videoCodec;
+          conn = Ayame.connection(signalingUrl, roomId, options, true);
+          conn1 = Ayame.connection(signalingUrl, roomId+"1", options, true);
+          conn2 = Ayame.connection(signalingUrl, roomId+"2", options, true);
+          conn3 = Ayame.connection(signalingUrl, roomId+"3", options, true);
+          const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: false})
+          conn.on('open', async (e) => {
+	    console.log(dataChannel);
+            dataChannel = await conn.createDataChannel(label);
+          });
+          conn.on('datachannel', (channel) => {
+            if (!dataChannel) {
+              dataChannel = channel;
+            }
+          });
+          conn.on('disconnect', (e) => console.log(e));
+          conn.on('addstream', (e) => {
+            document.querySelector('#remote-video').srcObject = e.stream;
+          });
+          conn1.on('addstream', (e) => {
+            document.querySelector('#remote-video1').srcObject = e.stream;
+          });
+          conn2.on('addstream', (e) => {
+            document.querySelector('#remote-video2').srcObject = e.stream;
+          });
+          conn3.on('addstream', (e) => {
+            document.querySelector('#remote-video3').srcObject = e.stream;
+          });
+         await conn.connect(mediaStream);
+         await conn1.connect(null);
+         await conn2.connect(null);
+         await conn3.connect(null);
+        };
+        const sendDataL = () => {
+          const data = 'a';
+	  console.log(data);
+	  console.log(dataChannel);
+          if (dataChannel && dataChannel.readyState === 'open') {
+            dataChannel.send(data);
+          }
+        };
+        const sendDataR = () => {
+          const data = 'd';
+	  console.log(data);
+	  console.log(dataChannel);
+          if (dataChannel && dataChannel.readyState === 'open') {
+            dataChannel.send(data);
+          }
+        };
+        const sendDataF = () => {
+          const data = 'w';
+	  console.log(data);
+	  console.log(dataChannel);
+          if (dataChannel && dataChannel.readyState === 'open') {
+            dataChannel.send(data);
+          }
+        };
+        const sendDataB = () => {
+          const data = 's';
+	  console.log(data);
+	  console.log(dataChannel);
+          if (dataChannel && dataChannel.readyState === 'open') {
+            dataChannel.send(data);
+          }
+        };
+        const sendDataRR = () => {
+          const data = 'c';
+	  console.log(data);
+	  console.log(dataChannel);
+          if (dataChannel && dataChannel.readyState === 'open') {
+            dataChannel.send(data);
+          }
+        };
+        const sendDataRL = () => {
+          const data = 'x';
+	  console.log(data);
+	  console.log(dataChannel);
+          if (dataChannel && dataChannel.readyState === 'open') {
+            dataChannel.send(data);
+          }
+        };
+
+	//keyボード入力でA1を操作
+	window.addEventListener('keydown', function(event) {
+
+		console.log(event.keyCode);
+		//e 69  d 68  f 70  s 83  j 74  l 76
+ 
+		if (event.keyCode == 69){
+			sendDataF();
+			console.log("forward");
+		}
+		if (event.keyCode == 83){
+			sendDataL();
+			console.log("left");
+		}
+		if (event.keyCode == 68){
+			sendDataB();
+			console.log("back");
+		}
+		if (event.keyCode == 70){
+			sendDataR();
+			console.log("right");
+		}
+		if (event.keyCode == 74){
+			sendDataRL();
+			console.log("rotate left");
+		}
+		if (event.keyCode == 76){
+			sendDataRR();
+			console.log("rotate right");
+		}
+	});
+
+        document.querySelector("#roomIdInput").value = roomId;
+        document.querySelector("#clientIdInput").value = options.clientId;
+      </script>
+  </body>
+</html>
