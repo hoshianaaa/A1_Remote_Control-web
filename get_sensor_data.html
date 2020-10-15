@@ -21,7 +21,7 @@
         <input id="sendDataInput" type="text" value="🐶"></input>
         </p>
         <button onclick="sendData();">送信</button>
-        <p> 受信したメッセージ </p>
+        <p> 状態 </p>
         <textarea style="height:200px;" id="messages" disabled type="text" value=""></textarea>
       </div>
       <script src="https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2020.3.0/dist/ayame.js"></script>
@@ -70,10 +70,21 @@
         document.querySelector("#roomIdInput").value = roomId;
         document.querySelector("#clientIdInput").value = options.clientId;
 
-        function onMessage(e) {
-          const messages = document.querySelector("#messages").value;
-          newMessages = messages ? (messages + '\n' + e.data) : e.data;
-          document.querySelector("#messages").value = newMessages;
+
+        function onMessage(e) { 
+	  const moji = String.fromCharCode.apply(null, new Uint8Array(e.data))
+	  console.log("moji");
+	  console.log(moji);
+
+	  switch_state = "off"
+	  if (moji == "o") {
+		switch_state = "on";
+	  }
+
+          //const messages = document.querySelector("#messages").value;
+          //newMessages = messages ? (messages + '\n' + e.data) : e.data;
+
+          document.querySelector("#messages").value = "switch state: " + switch_state;
         }
       </script>
   </body>
