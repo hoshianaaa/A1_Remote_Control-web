@@ -17,10 +17,10 @@
         </p>
         <button onclick="startConn();">接続</button>
         <button onclick="disconnect();">切断</button>
-        <p> 送信するメッセージ
-        <input id="sendDataInput" type="text" value="🐶"></input>
+        <p>LED 
+        <button onclick="ledOn();">ON</button>
+        <button onclick="ledOff();">OFF</button>
         </p>
-        <button onclick="sendData();">送信</button>
         <p> 状態 </p>
         <textarea style="height:200px;" id="messages" disabled type="text" value=""></textarea>
       </div>
@@ -61,12 +61,23 @@
           });
           await conn.connect(null);
         };
-        const sendData = () => {
-          const data = document.querySelector("#sendDataInput").value;
+        const ledOn = () => {
+          const data = '1';
+	  console.log(data);
+	  console.log(dataChannel);
           if (dataChannel && dataChannel.readyState === 'open') {
             dataChannel.send(data);
           }
         };
+        const ledOff = () => {
+          const data = '2';
+	  console.log(data);
+	  console.log(dataChannel);
+          if (dataChannel && dataChannel.readyState === 'open') {
+            dataChannel.send(data);
+          }
+        };
+
         document.querySelector("#roomIdInput").value = roomId;
         document.querySelector("#clientIdInput").value = options.clientId;
 
@@ -77,7 +88,7 @@
 	  console.log(moji);
 
 	  switch_state = "off"
-	  if (moji == "o") {
+	  if (moji == "1") {
 		switch_state = "on";
 	  }
 
