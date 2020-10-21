@@ -6,11 +6,11 @@ const serve = new Serve({
   port: 5000,
   static: ['./'],
   open: true,
-  liveReload: false,
-  https: {
-    key: fs.readFileSync('/home/pi/demoCA/private/ca.key'),
-    cert: fs.readFileSync('/home/pi/demoCA/ca.crt')
-  }
+  liveReload: false
+  //https: {
+   // key: fs.readFileSync('/home/pi/demoCA/private/ca.key'),
+   // cert: fs.readFileSync('/home/pi/demoCA/ca.crt')
+  //}
 });
 module.exports = {
   mode: 'development',

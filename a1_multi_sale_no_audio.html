@@ -1,0 +1,250 @@
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>Ayame RecvOnly Sample</title>
+        <link rel="stylesheet" href="https://cdn.rawgit.com/Chalarangelo/mini.css/v3.0.1/dist/mini-default.min.css">
+    </head>
+    <body>
+      <header class="sticky row">
+        <h4>A1 Remote Control</h4>
+      </header>
+      <div>
+        <p>Robot ID
+        <input id="roomIdInput" type="text" value=""></input>
+        </p>
+        <p>クライアントID
+        <input id="clientIdInput" disabled type="text" value=""></input>
+        </p>
+        <button onclick="sendDataL();">left(s)</button>
+        <button onclick="sendDataF();">forward(e)</button>
+        <button onclick="sendDataR();">right(f)</button>
+        <button onclick="sendDataB();">back(d)</button>
+        <button onclick="sendDataRR();">rotate right(l)</button>
+        <button onclick="sendDataRL();">rotate left(j)</button>
+	</p>
+        <button onclick="startConn();">接続</button>
+        <button onclick="disconnect();">切断</button>
+      </div>
+
+      <div style="float:center;">
+	<p>
+        <video id="remote-video" autoplay playsinline controls style="width: 400px; height: 300px; border: 1px solid black;"></video>
+	</P>
+        <video id="remote-video2" autoplay playsinline controls style="width: 300px; height: 200px; border: 1px solid black;"></video>
+      </div>
+
+      <script src="https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2020.2.1/dist/ayame.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.7.0/qs.min.js"></script>
+      <script src="./main.js"></script>
+      <script type="text/javascript">
+        const options = Ayame.defaultOptions;
+        options.clientId = clientId ? clientId : options.clientId;
+        if (signalingKey) {
+          options.signalingKey = signalingKey;
+        }
+        options.video.direction = 'recvonly';
+        let conn1,conn2,conn3,conn4,conn5,conn6;
+        const disconnect = () => {
+          if (conn1) {
+            conn1.disconnect();
+          }
+          if (conn2) {
+            conn2.disconnect();
+          }
+          if (conn3) {
+            conn3.disconnect();
+          }
+          if (conn4) {
+            conn4.disconnect();
+          }
+          if (conn5) {
+            conn5.disconnect();
+          }
+          if (conn6) {
+            conn6.disconnect();
+          }
+        }
+        let dataChannel1 = null; // A1
+        let dataChannel2 = null; // sensor1
+        let dataChannel3 = null; // sensor2
+        let dataChannel4 = null; // temp sensor
+
+        const label = 'dataChannel';
+        const startConn = async () => {
+          options.video.codec = videoCodec;
+          conn1 = Ayame.connection(signalingUrl, roomId+"-1", options, true); // A1
+          conn2 = Ayame.connection(signalingUrl, roomId+"-2", options, true); // forward camera
+          conn3 = Ayame.connection(signalingUrl, roomId+"-3", options, true); // back camera
+          conn4 = Ayame.connection(signalingUrl, roomId+"-4", options, true); // sensor1
+          conn5 = Ayame.connection(signalingUrl, roomId+"-5", options, true); // sensor2
+          conn6 = Ayame.connection(signalingUrl, roomId+"-6", options, true); // temp sensor
+          //const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: false})
+	
+	  //A1
+          conn1.on('open', async (e) => {
+	    console.log(dataChannel1);
+            dataChannel1 = await conn1.createDataChannel(label);
+          });
+          conn1.on('datachannel', (channel) => {
+            if (!dataChannel1) {
+              dataChannel1 = channel;
+            }
+          });
+          conn1.on('disconnect', (e) => console.log(e));
+          await conn1.connect(null);
+
+ 	  //forward camera
+          conn2.on('open', async (e) => {
+          });
+          conn2.on('disconnect', (e) => console.log(e));
+          conn2.on('addstream', (e) => {
+            document.querySelector('#remote-video').srcObject = e.stream;
+          });
+         await conn2.connect(null);
+
+	  //back camera
+          conn3.on('open', async (e) => {
+          });
+          conn3.on('disconnect', (e) => console.log(e));
+          conn3.on('addstream', (e) => {
+            document.querySelector('#remote-video2').srcObject = e.stream;
+          });
+         await conn3.connect(null);
+
+	  //sensor1
+          conn4.on('open', async (e) => {
+	    console.log(dataChannel2);
+            dataChannel2 = await conn4.createDataChannel(label);
+          });
+          conn4.on('datachannel', (channel) => {
+            if (!dataChannel2) {
+              dataChannel2 = channel;
+            }
+          });
+          conn4.on('disconnect', (e) => console.log(e));
+          await conn4.connect(null);
+
+	  //sensor2
+          conn5.on('open', async (e) => {
+	    console.log(dataChannel3);
+            dataChannel3 = await conn5.createDataChannel(label);
+          });
+          conn5.on('datachannel', (channel) => {
+            if (!dataChannel5) {
+              dataChannel5 = channel;
+            }
+          });
+          conn5.on('disconnect', (e) => console.log(e));
+          await conn5.connect(null);
+
+	  //temp sensor
+          conn6.on('open', async (e) => {
+	    console.log(dataChannel4);
+            dataChannel4 = await conn6.createDataChannel(label);
+          });
+          conn6.on('datachannel', (channel) => {
+            if (!dataChannel4) {
+              dataChannel4 = channel;
+            }
+          });
+          conn6.on('disconnect', (e) => console.log(e));
+          await conn6.connect(null);
+
+
+        };
+
+        const sendDataL = () => {
+          const data = 'a';
+	  console.log(data);
+	  console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataR = () => {
+          const data = 'd';
+	  console.log(data);
+	  console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataF = () => {
+          const data = 'w';
+	  console.log(data);
+	  console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataB = () => {
+          const data = 's';
+	  console.log(data);
+	  console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataRR = () => {
+          const data = 'c';
+	  console.log(data);
+	  console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataRL = () => {
+          const data = 'x';
+	  console.log(data);
+	  console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+
+	//keyボード入力でA1を操作
+	window.addEventListener('keydown', function(event) {
+
+		console.log(event.keyCode);
+		//e 69  d 68  f 70  s 83  j 74  l 76 
+		//0 48
+ 
+		if (event.keyCode == 69){
+			sendDataF();
+			console.log("forward");
+		}
+		if (event.keyCode == 83){
+			sendDataL();
+			console.log("left");
+		}
+		if (event.keyCode == 68){
+			sendDataB();
+			console.log("back");
+		}
+		if (event.keyCode == 70){
+			sendDataR();
+			console.log("right");
+		}
+		if (event.keyCode == 74){
+			sendDataRL();
+			console.log("rotate left");
+		}
+		if (event.keyCode == 76){
+			sendDataRR();
+			console.log("rotate right");
+		}
+		if (event.keyCode == 48){
+			Debug()
+		}
+	});
+
+        const Debug = () => {
+	  console.log("*** debug ***");
+	  console.log("A1:"+dataChannel1);
+        };
+
+        document.querySelector("#roomIdInput").value = roomId;
+        document.querySelector("#clientIdInput").value = options.clientId;
+      </script>
+  </body>
+</html>

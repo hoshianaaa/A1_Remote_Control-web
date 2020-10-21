@@ -1,5 +1,5 @@
-const signalingUrl = 'ws://192.168.1.119:3000/signaling';
-let roomId = 'hoshina';
+const signalingUrl = 'ws://192.168.1.168:3000/signaling';
+let roomId = 'TS-A1-001';
 let clientId = null;
 let videoCodec = null;
 let audioCodec = null;
