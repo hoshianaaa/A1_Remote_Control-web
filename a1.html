@@ -11,9 +11,8 @@
       <div>
         <p>Robot ID
         <input id="roomIdInput" type="text" value=""></input>
-        </p>
-        <p>クライアントID
-        <input id="clientIdInput" disabled type="text" value=""></input>
+        <button onclick="startConn();">接続</button>
+        <button onclick="disconnect();">切断</button>
         </p>
         <button onclick="sendDataL();">left(s)</button>
         <button onclick="sendDataF();">forward(e)</button>
@@ -22,11 +21,7 @@
         <button onclick="sendDataRR();">rotate right(l)</button>
         <button onclick="sendDataRL();">rotate left(j)</button>
 	</p>
-        <button onclick="startConn();">接続</button>
-        <button onclick="disconnect();">切断</button>
-      </div>
-      <div style="float:left;">
-        <video id="remote-video" autoplay playsinline controls style="width: 400px; height: 300px; border: 1px solid black;"></video>
+        <textarea id="messages" rows="20" cols="100" disabled type="text" value=""></textarea>
       </div>
       <script src="https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2020.2.1/dist/ayame.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.7.0/qs.min.js"></script>
@@ -38,79 +33,157 @@
           options.signalingKey = signalingKey;
         }
         options.video.direction = 'recvonly';
-        let conn;
+        let conn1,conn4,conn5,conn6;
         const disconnect = () => {
-          if (conn) {
-            conn.disconnect();
+          if (conn1) {
+            conn1.disconnect();
+          }
+          if (conn4) {
+            conn4.disconnect();
+          }
+          if (conn5) {
+            conn5.disconnect();
+          }
+          if (conn6) {
+            conn6.disconnect();
           }
         }
-        let dataChannel = null;
+        let dataChannel1 = null; // A1
+        let dataChannel2 = null; // sensor1
+        let dataChannel3 = null; // sensor2
+        let dataChannel4 = null; // temp sensor
+	let video_stream;
+
         const label = 'dataChannel';
         const startConn = async () => {
           options.video.codec = videoCodec;
-          conn = Ayame.connection(signalingUrl, roomId, options, true);
-          const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: false})
-          conn.on('open', async (e) => {
-	    console.log(dataChannel);
-            dataChannel = await conn.createDataChannel(label);
+          conn1 = Ayame.connection(signalingUrl, roomId+"-1", options, true); // A1
+          conn4 = Ayame.connection(signalingUrl, roomId+"-4", options, true); // sensor1
+          conn5 = Ayame.connection(signalingUrl, roomId+"-5", options, true); // sensor2
+          conn6 = Ayame.connection(signalingUrl, roomId+"-6", options, true); // temp sensor
+          //const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: false})
+	
+	  //A1
+          conn1.on('open', async (e) => {
+	    console.log(dataChannel1);
+            dataChannel1 = await conn1.createDataChannel(label);
           });
-          conn.on('datachannel', (channel) => {
-            if (!dataChannel) {
-              dataChannel = channel;
+          conn1.on('datachannel', (channel) => {
+            if (!dataChannel1) {
+              dataChannel1 = channel;
             }
           });
-          conn.on('disconnect', (e) => console.log(e));
-          conn.on('addstream', (e) => {
-            document.querySelector('#remote-video').srcObject = e.stream;
+          conn1.on('disconnect', (e) => console.log(e));
+          await conn1.connect(null);
+
+	  //sensor1
+          conn4.on('open', async (e) => {
+	    console.log(dataChannel2);
+            dataChannel2 = await conn4.createDataChannel(label);
+            if (dataChannel2) {
+              dataChannel2.onmessage = onMessage2;
+            }
           });
-          await conn.connect(mediaStream);
+          conn4.on('datachannel', (channel) => {
+            if (!dataChannel2) {
+              dataChannel2 = channel;
+              dataChannel2.onmessage = onMessage2;
+            }
+          });
+          conn4.on('disconnect', (e) => console.log(e));
+          await conn4.connect(null);
+
+	  //sensor2
+          conn5.on('open', async (e) => {
+	    console.log(dataChannel3);
+            dataChannel3 = await conn5.createDataChannel(label);
+            if (dataChannel3) {
+              dataChannel3.onmessage = onMessage3;
+            }
+          });
+          conn5.on('datachannel', (channel) => {
+            if (!dataChannel3) {
+              dataChannel3 = channel;
+              dataChannel3.onmessage = onMessage3;
+            }
+          });
+          conn5.on('disconnect', (e) => console.log(e));
+          await conn5.connect(null);
+
+	  //temp sensor
+          conn6.on('open', async (e) => {
+	    console.log(dataChannel4);
+            dataChannel4 = await conn6.createDataChannel(label);
+            if (dataChannel4) {
+              dataChannel4.onmessage = onMessage4;
+            }
+          });
+          conn6.on('datachannel', (channel) => {
+            if (!dataChannel4) {
+              dataChannel4 = channel;
+              dataChannel4.onmessage = onMessage4;
+            }
+          });
+          conn6.on('disconnect', (e) => console.log(e));
+          await conn6.connect(null);
+
+	  startfnc();
+
+	  url = '../video_forward.html?roomId=' + roomId + '-2';
+	  url2 = '../video_back.html?roomId=' + roomId + '-3';
+	  console.log(url,url2)
+	  var Win1 = window.open(url, 'subWindow', 'width=' + 600 + ',height=' + 400 + '');
+	  var Win2 = window.open(url2, 'subWindow2', 'width=' + 600 + ',height=' + 400 + '');
+
+
         };
+
         const sendDataL = () => {
           const data = 'a';
 	  console.log(data);
-	  console.log(dataChannel);
-          if (dataChannel && dataChannel.readyState === 'open') {
-            dataChannel.send(data);
+	  console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
           }
         };
         const sendDataR = () => {
           const data = 'd';
 	  console.log(data);
-	  console.log(dataChannel);
-          if (dataChannel && dataChannel.readyState === 'open') {
-            dataChannel.send(data);
+	  console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
           }
         };
         const sendDataF = () => {
           const data = 'w';
 	  console.log(data);
-	  console.log(dataChannel);
-          if (dataChannel && dataChannel.readyState === 'open') {
-            dataChannel.send(data);
+	  console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
           }
         };
         const sendDataB = () => {
           const data = 's';
 	  console.log(data);
-	  console.log(dataChannel);
-          if (dataChannel && dataChannel.readyState === 'open') {
-            dataChannel.send(data);
+	  console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
           }
         };
         const sendDataRR = () => {
           const data = 'c';
 	  console.log(data);
-	  console.log(dataChannel);
-          if (dataChannel && dataChannel.readyState === 'open') {
-            dataChannel.send(data);
+	  console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
           }
         };
         const sendDataRL = () => {
           const data = 'x';
 	  console.log(data);
-	  console.log(dataChannel);
-          if (dataChannel && dataChannel.readyState === 'open') {
-            dataChannel.send(data);
+	  console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
           }
         };
 
@@ -118,7 +191,8 @@
 	window.addEventListener('keydown', function(event) {
 
 		console.log(event.keyCode);
-		//e 69  d 68  f 70  s 83  j 74  l 76
+		//e 69  d 68  f 70  s 83  j 74  l 76 
+		//0 48
  
 		if (event.keyCode == 69){
 			sendDataF();
@@ -144,9 +218,81 @@
 			sendDataRR();
 			console.log("rotate right");
 		}
+		if (event.keyCode == 48){
+			Debug()
+		}
 	});
+
+        const Debug = () => {
+	  console.log("*** debug ***");
+	  console.log("A1:"+dataChannel1);
+        };
+
         document.querySelector("#roomIdInput").value = roomId;
-        document.querySelector("#clientIdInput").value = options.clientId;
-      </script>
+/*
+        let dataChannel1 = null; // A1
+        let dataChannel2 = null; // sensor1
+        let dataChannel3 = null; // sensor2
+        let dataChannel4 = null; // temp sensor
+*/
+
+	var s1_val = null;
+	var s2_val = null;
+	var tmp_val = null;
+
+	function hyoji()
+	{
+		L0 = "*** a1 state ***" + "\n";
+
+		if (dataChannel1)A1_Control = 1;
+		else A1_Control = 0;
+		L1 = "control:" + A1_Control + "\n";
+
+		if (dataChannel2)sensor1 = 1;
+		else sensor1 = 0;
+		L2 = "sensor1:" + sensor1 + "\n";
+
+		if (dataChannel3)sensor2 = 1;
+		else sensor2 = 0;
+		L3 = "sensor2:" + sensor2 + "\n";
+
+		if (dataChannel4)tmp_sensor = 1;
+		else tmp_sensor = 0;
+		L4 = "tmp sensor:" + tmp_sensor + "\n";
+
+		L5 = "\n" + "*** sensor value ***" + "\n";
+
+		L6 = "sensor1:" + s1_val + "\n";
+		L7 = "sensor2:" + s2_val + "\n";
+		L8 = "tmp sensor:" + tmp_val + "\n";
+
+		L9 = "video_stream:" + video_stream + "\n";
+
+		document.querySelector("#messages").value = L0 + L1 + L2 + L3 + L4 + L5 + L6 + L7 + L8 + L9;
+
+	  	console.log(video_stream);
+	}
+
+	function startfnc()
+	{
+		setInterval("hyoji()",300);
+	}
+
+        function onMessage2(e) { 
+	  	const moji = String.fromCharCode.apply(null, new Uint8Array(e.data))
+		s1_val = Number(moji);
+	}
+
+        function onMessage3(e) { 
+	  	const moji = String.fromCharCode.apply(null, new Uint8Array(e.data))
+		s2_val = Number(moji);
+	}
+
+        function onMessage4(e) { 
+	  	const moji = String.fromCharCode.apply(null, new Uint8Array(e.data))
+		tmp_val = Number(moji);
+	}
+
+	</script>
   </body>
 </html>
