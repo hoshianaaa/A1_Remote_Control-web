@@ -7,16 +7,22 @@
     <body>
 	<style>
 	.main {
-		color: #fff; 
+		color: lightgray; 
 		font-size: 10px;
 		background-color: #222222;
+		height: 100%;
 	}
+	.box {
+	  	position: relative;
+	  	border-radius: 4px;/*????*/
+	}
+
 	</style>
         <div class="main">
         <p>Robot ID
         <input id="roomIdInput" type="text" value=""></input>
-        <button onclick="startConn();">接続</button>
-        <button onclick="disconnect();">切断</button>
+        <button onclick="startConn();"class="box">connect</button>
+        <button onclick="disconnect();"class="box">disconnect</button>
         </p>
         <button onclick="sendDataL();">left(s)</button>
         <button onclick="sendDataF();">forward(e)</button>
@@ -25,7 +31,7 @@
         <button onclick="sendDataRR();">rotate right(l)</button>
         <button onclick="sendDataRL();">rotate left(j)</button>
 	</p>
-        <textarea id="messages" rows="20" cols="100" disabled type="text" value=""></textarea>
+        <textarea id="messages" rows="30" cols="100" disabled type="text" value="" style=font-size:10;background:black;color:#00ffff;></textarea>
       </div>
       <script src="https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2020.2.1/dist/ayame.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.7.0/qs.min.js"></script>
@@ -64,7 +70,6 @@
         let dataChannel2 = null; // sensor1
         let dataChannel3 = null; // sensor2
         let dataChannel4 = null; // temp sensor
-	let video_stream;
 
         const label = 'dataChannel';
         const startConn = async () => {
@@ -276,11 +281,7 @@
 		L7 = "sensor2:" + s2_val + "\n";
 		L8 = "tmp sensor:" + tmp_val + "\n";
 
-		L9 = "video_stream:" + video_stream + "\n";
-
-		document.querySelector("#messages").value = L0 + L1 + L2 + L3 + L4 + L5 + L6 + L7 + L8 + L9;
-
-	  	console.log(video_stream);
+		document.querySelector("#messages").value = L0 + L1 + L2 + L3 + L4 + L5 + L6 + L7 + L8;
 	}
 
 	function startfnc()
