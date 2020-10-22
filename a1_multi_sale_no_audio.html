@@ -24,6 +24,8 @@
 	</p>
         <button onclick="startConn();">接続</button>
         <button onclick="disconnect();">切断</button>
+        <p> A1の状態・センサーデータ</p>
+        <textarea style="height:200px;" id="messages" disabled type="text" value=""></textarea>
       </div>
 
       <div style="float:center;">
@@ -115,10 +117,14 @@
           conn4.on('open', async (e) => {
 	    console.log(dataChannel2);
             dataChannel2 = await conn4.createDataChannel(label);
+            if (dataChannel2) {
+              dataChannel2.onmessage = onMessage2;
+            }
           });
           conn4.on('datachannel', (channel) => {
             if (!dataChannel2) {
               dataChannel2 = channel;
+              dataChannel2.onmessage = onMessage2;
             }
           });
           conn4.on('disconnect', (e) => console.log(e));
@@ -128,10 +134,14 @@
           conn5.on('open', async (e) => {
 	    console.log(dataChannel3);
             dataChannel3 = await conn5.createDataChannel(label);
+            if (dataChannel3) {
+              dataChannel3.onmessage = onMessage3;
+            }
           });
           conn5.on('datachannel', (channel) => {
-            if (!dataChannel5) {
-              dataChannel5 = channel;
+            if (!dataChannel3) {
+              dataChannel3 = channel;
+              dataChannel3.onmessage = onMessage3;
             }
           });
           conn5.on('disconnect', (e) => console.log(e));
@@ -141,15 +151,20 @@
           conn6.on('open', async (e) => {
 	    console.log(dataChannel4);
             dataChannel4 = await conn6.createDataChannel(label);
+            if (dataChannel4) {
+              dataChannel4.onmessage = onMessage4;
+            }
           });
           conn6.on('datachannel', (channel) => {
             if (!dataChannel4) {
               dataChannel4 = channel;
+              dataChannel4.onmessage = onMessage4;
             }
           });
           conn6.on('disconnect', (e) => console.log(e));
           await conn6.connect(null);
 
+	  startfnc();
 
         };
 
@@ -245,6 +260,67 @@
 
         document.querySelector("#roomIdInput").value = roomId;
         document.querySelector("#clientIdInput").value = options.clientId;
+
+/*
+        let dataChannel1 = null; // A1
+        let dataChannel2 = null; // sensor1
+        let dataChannel3 = null; // sensor2
+        let dataChannel4 = null; // temp sensor
+*/
+
+	var s1_val = null;
+	var s2_val = null;
+	var tmp_val = null;
+
+	function hyoji()
+	{
+		L0 = "*** a1 state ***" + "\n";
+
+		if (dataChannel1)A1_Control = 1;
+		else A1_Control = 0;
+		L1 = "control:" + A1_Control + "\n";
+
+		if (dataChannel2)sensor1 = 1;
+		else sensor1 = 0;
+		L2 = "sensor1:" + sensor1 + "\n";
+
+		if (dataChannel3)sensor2 = 1;
+		else sensor2 = 0;
+		L3 = "sensor2:" + sensor2 + "\n";
+
+		if (dataChannel4)tmp_sensor = 1;
+		else tmp_sensor = 0;
+		L4 = "tmp sensor:" + tmp_sensor + "\n";
+
+		L5 = "\n" + "*** sensor value ***" + "\n";
+
+		L6 = "sensor1:" + s1_val + "\n";
+		L7 = "sensor2:" + s2_val + "\n";
+		L8 = "tmp sensor:" + tmp_val + "\n";
+
+		document.querySelector("#messages").value = L0 + L1 + L2 + L3 + L4 + L5 + L6 + L7 + L8;
+	}
+
+	function startfnc()
+	{
+		setInterval("hyoji()",300);
+	}
+
+        function onMessage2(e) { 
+	  	const moji = String.fromCharCode.apply(null, new Uint8Array(e.data))
+		s1_val = Number(moji);
+	}
+
+        function onMessage3(e) { 
+	  	const moji = String.fromCharCode.apply(null, new Uint8Array(e.data))
+		s2_val = Number(moji);
+	}
+
+        function onMessage4(e) { 
+	  	const moji = String.fromCharCode.apply(null, new Uint8Array(e.data))
+		tmp_val = Number(moji);
+	}
+
       </script>
   </body>
 </html>
