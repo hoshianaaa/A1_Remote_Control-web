@@ -31,6 +31,7 @@
       <div style="float:center;">
 	<p>
         <video id="remote-video" autoplay playsinline controls style="width: 400px; height: 300px; border: 1px solid black;"></video>
+        <button onclick="WindowOpen();">別ウィンドウ</button>
 	</P>
         <video id="remote-video2" autoplay playsinline controls style="width: 300px; height: 200px; border: 1px solid black;"></video>
       </div>
@@ -70,6 +71,7 @@
         let dataChannel2 = null; // sensor1
         let dataChannel3 = null; // sensor2
         let dataChannel4 = null; // temp sensor
+	let video_stream;
 
         const label = 'dataChannel';
         const startConn = async () => {
@@ -100,6 +102,7 @@
           });
           conn2.on('disconnect', (e) => console.log(e));
           conn2.on('addstream', (e) => {
+	    video_stream = e.stream;
             document.querySelector('#remote-video').srcObject = e.stream;
           });
          await conn2.connect(null);
@@ -298,7 +301,11 @@
 		L7 = "sensor2:" + s2_val + "\n";
 		L8 = "tmp sensor:" + tmp_val + "\n";
 
-		document.querySelector("#messages").value = L0 + L1 + L2 + L3 + L4 + L5 + L6 + L7 + L8;
+		L9 = "video_stream:" + video_stream + "\n";
+
+		document.querySelector("#messages").value = L0 + L1 + L2 + L3 + L4 + L5 + L6 + L7 + L8 + L9;
+
+	  	console.log(video_stream);
 	}
 
 	function startfnc()
@@ -321,6 +328,12 @@
 		tmp_val = Number(moji);
 	}
 
-      </script>
+	function WindowOpen() {
+	    var Win1 = window.open('', 'subWindow', 'width=' + 400 + ',height=' + 300 + '');
+	    Win1.document.clear();
+	    Win1.document.write('<!DOCTYPE html><html><head><meta http-equiv=Content-Type content="text/html; charset=utf-8"><title>Sub Window</title></head><body style="margin: 0; background: black; overflow: hidden;"><video controls="" loop="" autoplay="" src="' + video_stream + '" style="width: 100%; height: auto;"></video></body></html>');
+	    Win1.document.close();
+	}
+	</script>
   </body>
 </html>
