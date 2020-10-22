@@ -5,10 +5,14 @@
         <link rel="stylesheet" href="https://cdn.rawgit.com/Chalarangelo/mini.css/v3.0.1/dist/mini-default.min.css">
     </head>
     <body>
-      <header class="sticky row">
-        <h4>A1 Remote Control</h4>
-      </header>
-      <div>
+	<style>
+	.main {
+		color: #fff; 
+		font-size: 10px;
+		background-color: #222222;
+	}
+	</style>
+        <div class="main">
         <p>Robot ID
         <input id="roomIdInput" type="text" value=""></input>
         <button onclick="startConn();">接続</button>
@@ -28,6 +32,7 @@
       <script src="./main.js"></script>
       <script type="text/javascript">
         const options = Ayame.defaultOptions;
+	var Win1,Win2;
         options.clientId = clientId ? clientId : options.clientId;
         if (signalingKey) {
           options.signalingKey = signalingKey;
@@ -47,6 +52,13 @@
           if (conn6) {
             conn6.disconnect();
           }
+	  if (Win1) {
+		  Win1.close();
+	  }
+	  if (Win2) {
+		  Win2.close();
+
+	  }
         }
         let dataChannel1 = null; // A1
         let dataChannel2 = null; // sensor1
@@ -132,10 +144,8 @@
 	  url = '../video_forward.html?roomId=' + roomId + '-2';
 	  url2 = '../video_back.html?roomId=' + roomId + '-3';
 	  console.log(url,url2)
-	  var Win1 = window.open(url, 'subWindow', 'width=' + 600 + ',height=' + 400 + '');
-	  var Win2 = window.open(url2, 'subWindow2', 'width=' + 600 + ',height=' + 400 + '');
-
-
+	  Win1 = window.open(url, 'subWindow', 'width=' + 600 + ',height=' + 400 + '');
+	  Win2 = window.open(url2, 'subWindow2', 'width=' + 600 + ',height=' + 400 + '');
         };
 
         const sendDataL = () => {
