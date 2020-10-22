@@ -12,9 +12,6 @@
         <p>Robot ID
         <input id="roomIdInput" type="text" value=""></input>
         </p>
-        <p>クライアントID
-        <input id="clientIdInput" disabled type="text" value=""></input>
-        </p>
         <button onclick="sendDataL();">left(s)</button>
         <button onclick="sendDataF();">forward(e)</button>
         <button onclick="sendDataR();">right(f)</button>
@@ -29,11 +26,7 @@
       </div>
 
       <div style="float:center;">
-	<p>
-        <video id="remote-video" autoplay playsinline controls style="width: 400px; height: 300px; border: 1px solid black;"></video>
         <button onclick="WindowOpen();">別ウィンドウ</button>
-	</P>
-        <video id="remote-video2" autoplay playsinline controls style="width: 300px; height: 200px; border: 1px solid black;"></video>
       </div>
 
       <script src="https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2020.2.1/dist/ayame.js"></script>
@@ -46,16 +39,10 @@
           options.signalingKey = signalingKey;
         }
         options.video.direction = 'recvonly';
-        let conn1,conn2,conn3,conn4,conn5,conn6;
+        let conn1,conn4,conn5,conn6;
         const disconnect = () => {
           if (conn1) {
             conn1.disconnect();
-          }
-          if (conn2) {
-            conn2.disconnect();
-          }
-          if (conn3) {
-            conn3.disconnect();
           }
           if (conn4) {
             conn4.disconnect();
@@ -77,8 +64,6 @@
         const startConn = async () => {
           options.video.codec = videoCodec;
           conn1 = Ayame.connection(signalingUrl, roomId+"-1", options, true); // A1
-          conn2 = Ayame.connection(signalingUrl, roomId+"-2", options, true); // forward camera
-          conn3 = Ayame.connection(signalingUrl, roomId+"-3", options, true); // back camera
           conn4 = Ayame.connection(signalingUrl, roomId+"-4", options, true); // sensor1
           conn5 = Ayame.connection(signalingUrl, roomId+"-5", options, true); // sensor2
           conn6 = Ayame.connection(signalingUrl, roomId+"-6", options, true); // temp sensor
@@ -96,25 +81,6 @@
           });
           conn1.on('disconnect', (e) => console.log(e));
           await conn1.connect(null);
-
- 	  //forward camera
-          conn2.on('open', async (e) => {
-          });
-          conn2.on('disconnect', (e) => console.log(e));
-          conn2.on('addstream', (e) => {
-	    video_stream = e.stream;
-            document.querySelector('#remote-video').srcObject = e.stream;
-          });
-         await conn2.connect(null);
-
-	  //back camera
-          conn3.on('open', async (e) => {
-          });
-          conn3.on('disconnect', (e) => console.log(e));
-          conn3.on('addstream', (e) => {
-            document.querySelector('#remote-video2').srcObject = e.stream;
-          });
-         await conn3.connect(null);
 
 	  //sensor1
           conn4.on('open', async (e) => {
@@ -168,6 +134,13 @@
           await conn6.connect(null);
 
 	  startfnc();
+
+	  url = '../video_forward.html?roomId=' + roomId + '-2';
+	  url2 = '../video_back.html?roomId=' + roomId + '-3';
+	  console.log(url,url2)
+	  var Win1 = window.open(url, 'subWindow', 'width=' + 600 + ',height=' + 400 + '');
+	  var Win2 = window.open(url2, 'subWindow2', 'width=' + 600 + ',height=' + 400 + '');
+
 
         };
 
@@ -262,8 +235,6 @@
         };
 
         document.querySelector("#roomIdInput").value = roomId;
-        document.querySelector("#clientIdInput").value = options.clientId;
-
 /*
         let dataChannel1 = null; // A1
         let dataChannel2 = null; // sensor1
@@ -328,12 +299,6 @@
 		tmp_val = Number(moji);
 	}
 
-	function WindowOpen() {
-	    var Win1 = window.open('', 'subWindow', 'width=' + 400 + ',height=' + 300 + '');
-	    Win1.document.clear();
-	    Win1.document.write('<!DOCTYPE html><html><head><meta http-equiv=Content-Type content="text/html; charset=utf-8"><title>Sub Window</title></head><body style="margin: 0; background: black; overflow: hidden;"><video controls="" loop="" autoplay="" src="' + video_stream + '" style="width: 100%; height: auto;"></video></body></html>');
-	    Win1.document.close();
-	}
 	</script>
   </body>
 </html>
