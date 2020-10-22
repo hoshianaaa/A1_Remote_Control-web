@@ -303,6 +303,13 @@
 		tmp_val = Number(moji);
 	}
 
+	const roomIdInput = document.getElementById("roomIdInput");
+	roomIdInput.addEventListener('change', (event) => {
+	  console.log(event);
+	  roomId = event.target.value;
+	});
+
+
 	</script>
   </body>
 </html>
