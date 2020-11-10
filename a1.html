@@ -4,7 +4,7 @@
         <title>A1 Remote Control</title>
         <link rel="stylesheet" href="https://cdn.rawgit.com/Chalarangelo/mini.css/v3.0.1/dist/mini-default.min.css">
     </head>
-    <body>
+    <body onunload="close()";>
 	<style>
 	.main {
 		color: lightgray; 
@@ -309,6 +309,17 @@
 	  console.log(event);
 	  roomId = event.target.value;
 	});
+
+	function close()
+	{
+	  if (Win1) {
+		  Win1.close();
+	  }
+	  if (Win2) {
+		  Win2.close();
+
+	  }
+	}
 
 
 	</script>
