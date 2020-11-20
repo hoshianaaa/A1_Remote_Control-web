@@ -4,82 +4,52 @@
         <title>A1 Remote Control</title>
         <link rel="stylesheet" href="https://cdn.rawgit.com/Chalarangelo/mini.css/v3.0.1/dist/mini-default.min.css">
     </head>
-    <body>
+    <body onunload="close()";>
 	<style>
-
-	.site-box {
-		box-sizing: border-box;
-		margin: 0;
+	.main {
 		color: lightgray; 
 		font-size: 10px;
 		background-color: #222222;
 		height: 100%;
 	}
-
-	.top {
-		width: 100%;
-		height: 20%;
-	}
-
-	.left {
-		float: left;
-		width: 70%;
-		height: 80%;
-	}
-
-	.right {
-		float: right;
-		width: 30%;
-		height: 80%;
-	}
-
 	.box {
 	  	position: relative;
 	  	border-radius: 4px;/*????*/
 	}
-	.center {
-		text-align:center;
-	}
 
 	</style>
-      <div class="site-box">
-	 	<div class="top">
-			<p>Robot ID
-			<input id="roomIdInput" type="text" value=""></input>
-			<button onclick="startConn();"class="box">connect</button>
-			<button onclick="disconnect();"class="box">disconnect</button>
-			<button onclick="startConnVoice();"class="box">voice on</button>
-			<button onclick="disconnectVoice();"class="box">voice off</button>
-			</p>
-			<p>
-			<audio id="remote-audio" autoplay controls style="height:40px;"></audio>
-			</p>
-		</div>
-		<div class="left">
-			<div class="center">
-        			<video id="main_monitor" autoplay style="height:45%;width:95%;border: 3px solid gray;"></video>
-			</div>
-			<div class="center">
-        			<video id="side_monitor" autoplay style="height:45%;width:95%;border: 3px solid gray;"></video>
-			</div>
-		</div>
-		<div class="right">
-			<div class="center">
-        			<textarea id="messages" disabled type="text" value="" style=width:90%;height:90%;font-size:10;background:black;color:#00ffff;></textarea>
-			</div>
-      		</div>
+        <div class="main">
+        <p>Robot ID
+        <input id="roomIdInput" type="text" value=""></input>
+        <button onclick="startConn();"class="box">connect</button>
+        <button onclick="disconnect();"class="box">disconnect</button>
+        </p>
+        <button onclick="sendDataL();">left(s)</button>
+        <button onclick="sendDataF();">forward(e)</button>
+        <button onclick="sendDataR();">right(f)</button>
+        <button onclick="sendDataB();">back(d)</button>
+        <button onclick="sendDataRR();">rotate right(l)</button>
+        <button onclick="sendDataRL();">rotate left(j)</button>
+	</p>
+        <button onclick="startConnVoice();"class="box">voice on</button>
+        <button onclick="disconnectVoice();"class="box">voice off</button>
+	</p>
+	<audio id="remote-audio" autoplay controls></audio>
+	</p>
+        <textarea id="messages" rows="30" cols="100" disabled type="text" value="" style=font-size:10;background:black;color:#00ffff;></textarea>
       </div>
       <script src="https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2020.2.1/dist/ayame.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.7.0/qs.min.js"></script>
       <script src="./main.js"></script>
       <script type="text/javascript">
         const options = Ayame.defaultOptions;
+	var Win1,Win2;
         options.clientId = clientId ? clientId : options.clientId;
         if (signalingKey) {
           options.signalingKey = signalingKey;
         }
         options.video.direction = 'recvonly';
-        let conn0,conn1,conn2,conn3,conn4,conn5,conn6;
+        let conn0,conn1,conn4,conn5,conn6;
 
         const disconnectVoice = () => {
           if (conn0) {
@@ -112,12 +82,6 @@
           if (conn1) {
             conn1.disconnect();
           }
-          if (conn2) {
-            conn1.disconnect();
-          }
-          if (conn3) {
-            conn1.disconnect();
-          }
           if (conn4) {
             conn4.disconnect();
           }
@@ -127,6 +91,13 @@
           if (conn6) {
             conn6.disconnect();
           }
+	  if (Win1) {
+		  Win1.close();
+	  }
+	  if (Win2) {
+		  Win2.close();
+
+	  }
         }
         let dataChannel1 = null; // A1
         let dataChannel2 = null; // sensor1
@@ -137,8 +108,6 @@
         const startConn = async () => {
           options.video.codec = videoCodec;
           conn1 = Ayame.connection(signalingUrl, roomId+"-1", options, true); // A1_controll
-          conn2 = Ayame.connection(signalingUrl, roomId+"-2", options, true); // main_monitor 
-          conn3 = Ayame.connection(signalingUrl, roomId+"-3", options, true); // side_monitor 
           conn4 = Ayame.connection(signalingUrl, roomId+"-4", options, true); // sensor1
           conn5 = Ayame.connection(signalingUrl, roomId+"-5", options, true); // sensor2
           conn6 = Ayame.connection(signalingUrl, roomId+"-6", options, true); // temp sensor
@@ -157,22 +126,6 @@
           });
           conn1.on('disconnect', (e) => console.log(e));
           await conn1.connect(null);
-
-	  //main_monitor
-          conn2.on('open', ({authzMetadata}) => console.log(authzMetadata));
-          conn2.on('disconnect', (e) => console.log(e));
-          conn2.on('addstream', (e) => {
-            document.querySelector('#main_monitor').srcObject = e.stream;
-          });
-          await conn2.connect(null);
-
-	  //side_monitor
-          conn3.on('open', ({authzMetadata}) => console.log(authzMetadata));
-          conn3.on('disconnect', (e) => console.log(e));
-          conn3.on('addstream', (e) => {
-            document.querySelector('#side_monitor').srcObject = e.stream;
-          });
-          await conn3.connect(null);
 
 	  //sensor1
           conn4.on('open', async (e) => {
@@ -227,6 +180,11 @@
 
 	  startfnc();
 
+	  url = '../video_forward_ssl.html?roomId=' + roomId + '-2';
+	  url2 = '../video_back.html?roomId=' + roomId + '-3';
+	  console.log(url,url2)
+	  Win1 = window.open(url, 'subWindow', "width=640,height=480,top=0, left=100");
+	  Win2 = window.open(url2, 'subWindow2', "width=640,height=480,top=650px,left=100");
         };
 
         const sendDataL = () => {
@@ -390,6 +348,17 @@
 	  roomId = event.target.value;
 	});
 	
+	function close()
+	{
+	  if (Win1) {
+		  Win1.close();
+	  }
+	  if (Win2) {
+		  Win2.close();
+
+	  }
+	}
+
 
 	</script>
   </body>
