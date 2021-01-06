@@ -83,9 +83,18 @@
 
 		</div>
 		<div class="right">
+
 			<div class="center">
-        			<textarea id="messages" disabled type="text" value="" style=width:90%;height:90%;font-size:10;background:black;color:#00ffff;></textarea>
+        			<video id="ptz_monitor" autoplay style="height:40%;width:90%;border: 3px solid gray;"></video>
 			</div>
+
+			<p>
+			</p>
+
+			<div class="center">
+        			<textarea id="messages" disabled type="text" value="" style=width:90%;height:50%;font-size:10;background:black;color:#00ffff;></textarea>
+			</div>
+
       		</div>
       </div>
       <script src="https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2020.2.1/dist/ayame.js"></script>
@@ -152,6 +161,7 @@
         let dataChannel2 = null; // sensor1
         let dataChannel3 = null; // sensor2
         let dataChannel4 = null; // temp sensor
+        let dataChannel11 = null; // ptz val
 
         const label = 'dataChannel';
         const startConn = async () => {
@@ -164,6 +174,8 @@
           conn6 = Ayame.connection(signalingUrl, roomId+"-6", options, true); // temp sensor
           conn8 = Ayame.connection(signalingUrl, roomId+"-8", options, true); // right_monitor 
           conn9 = Ayame.connection(signalingUrl, roomId+"-9", options, true); // left_monitor 
+          conn10 = Ayame.connection(signalingUrl, roomId+"-10", options, true); // ptz_monitor 
+          conn11 = Ayame.connection(signalingUrl, roomId+"-11", options, true); // ptz_controll
 	 
 	  //A1
           conn1.on('open', async (e) => {
@@ -217,6 +229,34 @@
           });
           await conn9.connect(null);
 	  await delay(1000);
+
+	  //ptz_monitor
+          conn10.on('open', ({authzMetadata}) => console.log(authzMetadata));
+          conn10.on('disconnect', (e) => console.log(e));
+          conn10.on('addstream', (e) => {
+            document.querySelector('#ptz_monitor').srcObject = e.stream;
+          });
+          await conn10.connect(null);
+	  await delay(1000);
+
+	  //ptz_control
+          conn11.on('open', async (e) => {
+	    console.log(dataChannel11);
+            dataChannel11 = await conn11.createDataChannel(label);
+            if (dataChannel11) {
+              dataChannel11.onmessage = onMessage11;
+            }
+          });
+          conn11.on('datachannel', (channel) => {
+            if (!dataChannel11) {
+              dataChannel11 = channel;
+              dataChannel11.onmessage = onMessage11;
+            }
+          });
+          conn11.on('disconnect', (e) => console.log(e));
+          await conn11.connect(null);
+	  await delay(1000);
+
 
 	  //sensor1
           conn4.on('open', async (e) => {
@@ -346,12 +386,58 @@
           }
         };
 
+	const sendDataPtzInit = () => {
+          const data = 'a';
+	  console.log(data);
+	  console.log(dataChannel11);
+          if (dataChannel11 && dataChannel11.readyState === 'open') {
+            dataChannel11.send(data);
+          }
+        };
+
+	const sendDataPtzUp = () => {
+          const data = 'i';
+	  console.log(data);
+	  console.log(dataChannel11);
+          if (dataChannel11 && dataChannel11.readyState === 'open') {
+            dataChannel11.send(data);
+          }
+        };
+
+	const sendDataPtzDown = () => {
+          const data = 'k';
+	  console.log(data);
+	  console.log(dataChannel11);
+          if (dataChannel11 && dataChannel11.readyState === 'open') {
+            dataChannel11.send(data);
+          }
+        };
+
+	const sendDataPtzLeft = () => {
+          const data = 'j';
+	  console.log(data);
+	  console.log(dataChannel11);
+          if (dataChannel11 && dataChannel11.readyState === 'open') {
+            dataChannel11.send(data);
+          }
+        };
+
+	const sendDataPtzRight = () => {
+          const data = 'l';
+	  console.log(data);
+	  console.log(dataChannel11);
+          if (dataChannel11 && dataChannel11.readyState === 'open') {
+            dataChannel11.send(data);
+          }
+        };
+
+
 	//keyボード入力でA1を操作
 	window.addEventListener('keydown', function(event) {
 
 		console.log(event.keyCode);
 		//e 69  d 68  f 70  s 83  j 74  l 76 
-		//0 48
+		//0 48  
  
 		if (event.keyCode == 69){
 			sendDataF();
@@ -389,6 +475,29 @@
 			sendDataBD();
 			console.log("body down");
 		}
+
+		//space 32 上矢印 38 下矢印 40 左矢印 37 右矢印 39
+
+		if (event.keyCode == 32){
+			sendDataPtzInit();
+			console.log("ptz init");
+		}
+		if (event.keyCode == 38){
+			sendDataPtzUp();
+			console.log("ptz up");
+		}
+		if (event.keyCode == 40){
+			sendDataPtzDown();
+			console.log("ptz down");
+		}
+		if (event.keyCode == 37){
+			sendDataPtzLeft();
+			console.log("ptz left");
+		}
+		if (event.keyCode == 39){
+			sendDataPtzRight();
+			console.log("ptz right");
+		}
 		if (event.keyCode == 48){
 			Debug()
 		}
@@ -410,6 +519,7 @@
 	var s1_val = null;
 	var s2_val = null;
 	var tmp_val = null;
+	var ptz_val = null;
 
 	let autoMotion = null;
 
@@ -444,6 +554,8 @@
 		L8 = "tmp sensor:" + tmp_val + "\n";
 
 		L9 = "auto motion:" + autoMotion + "\n";
+
+		L10 = "ptz val:" + ptz_val + "\n";
 		
 		if (autoMotion == "rotate_r")
 		{
@@ -457,7 +569,7 @@
 			console.log("rotate l");
 		}
 
-		document.querySelector("#messages").value = L0 + Lv + L1 + L2 + L3 + L4 + L5 + L6 + L7 + L8 + L9;
+		document.querySelector("#messages").value = L0 + Lv + L1 + L2 + L3 + L4 + L5 + L6 + L7 + L8 + L9 + L10;
 	}
 
 	function startfnc()
@@ -478,6 +590,11 @@
         function onMessage4(e) { 
 	  	const moji = String.fromCharCode.apply(null, new Uint8Array(e.data))
 		tmp_val = Number(moji);
+	}
+
+        function onMessage11(e) { 
+	  	const moji = String.fromCharCode.apply(null, new Uint8Array(e.data))
+		ptz_val = Number(moji);
 	}
 
 	function onChangeAutoMotion() {
