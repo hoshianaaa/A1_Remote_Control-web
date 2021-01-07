@@ -594,7 +594,8 @@
 
         function onMessage11(e) { 
 	  	const moji = String.fromCharCode.apply(null, new Uint8Array(e.data))
-		ptz_val = Number(moji);
+		//ptz_val = Number(moji);
+		ptz_val = moji;
 	}
 
 	function onChangeAutoMotion() {
