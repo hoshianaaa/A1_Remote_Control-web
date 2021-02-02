@@ -102,6 +102,7 @@
       <script src="./main.js"></script>
       <script type="text/javascript">
 
+        let SPEED_LEVEL = 2;
         const options = Ayame.defaultOptions;
         options.clientId = clientId ? clientId : options.clientId;
         if (signalingKey) {
@@ -385,7 +386,14 @@
             dataChannel1.send(data);
           }
         };
-
+        const sendDataSpeed = (speed) => {
+          const data = String(speed);
+          console.log(data);
+          console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
         const sendDataPtzInit = () => {
           const data = 'a';
           console.log(data);
@@ -394,7 +402,6 @@
             dataChannel11.send(data);
           }
         };
-
         const sendDataPtzUp = () => {
           const data = 'i';
           console.log(data);
@@ -403,7 +410,6 @@
             dataChannel11.send(data);
           }
         };
-
         const sendDataPtzDown = () => {
           const data = 'k';
           console.log(data);
@@ -412,7 +418,6 @@
             dataChannel11.send(data);
           }
         };
-
         const sendDataPtzLeft = () => {
           const data = 'j';
           console.log(data);
@@ -421,7 +426,6 @@
             dataChannel11.send(data);
           }
         };
-
         const sendDataPtzRight = () => {
           const data = 'l';
           console.log(data);
@@ -430,8 +434,22 @@
             dataChannel11.send(data);
           }
         };
-
-
+        const sendDataPtzZoomIn = () => {
+          const data = 'm';
+          console.log(data);
+          console.log(dataChannel11);
+          if (dataChannel11 && dataChannel11.readyState === 'open') {
+            dataChannel11.send(data);
+          }
+        };
+        const sendDataPtzZoomOut = () => {
+          const data = 'n';
+          console.log(data);
+          console.log(dataChannel11);
+          if (dataChannel11 && dataChannel11.readyState === 'open') {
+            dataChannel11.send(data);
+          }
+        };
         //keyボード入力でA1を操作
         window.addEventListener('keydown', function(event) {
 
@@ -498,8 +516,23 @@
                         sendDataPtzRight();
                         console.log("ptz right");
                 }
-                if (event.keyCode == 48){
-                        Debug()
+                if (event.keyCode == 33){
+                        sendDataPtzZoomIn();
+                        console.log("ptz zoom in");
+                }
+                if (event.keyCode == 34){
+                        sendDataPtzZoomOut();
+                        console.log("ptz zoom out");
+                }
+
+
+                //speed change
+                //0: 48 1:49 ... 9:57
+                if (event.keyCode > 47 && event.keyCode < 58){
+                        sendDataSpeed(event.keyCode);
+                        SPEED_LEVEL = event.keyCode - 48;
+                        console.log("change speed");
+                        console.log("Speed Level:",event.keyCode - 48)
                 }
         });
 
@@ -539,6 +572,8 @@
                 else PTZ_Control = 0;
                 PTZ = "ptz control:" + PTZ_Control + "\n";
 
+                SP = "Speed Level:" + SPEED_LEVEL + "\n";
+
                 if (dataChannel2)sensor1 = 1;
                 else sensor1 = 0;
                 L2 = "sensor1:" + sensor1 + "\n";
@@ -573,7 +608,7 @@
                         console.log("rotate l");
                 }
 
-                document.querySelector("#messages").value = L0 + Lv + L1 + PTZ + L2 + L3 + L4 + L5 + L6 + L7 + L8 + L9 + L10;
+                document.querySelector("#messages").value = L0 + Lv + L1 + PTZ + SP + L2 + L3 + L4 + L5 + L6 + L7 + L8 + L9 + L10;
         }
 
         function startfnc()
