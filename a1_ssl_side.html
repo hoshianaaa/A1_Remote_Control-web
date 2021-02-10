@@ -517,11 +517,11 @@
                         sendDataPtzRight();
                         console.log("ptz right");
                 }
-                if (event.keyCode == 33){
+                if (event.keyCode == 33 || event.keyCode == 90){
                         sendDataPtzZoomIn();
                         console.log("ptz zoom in");
                 }
-                if (event.keyCode == 34){
+                if (event.keyCode == 34 || event.keyCode == 88){
                         sendDataPtzZoomOut();
                         console.log("ptz zoom out");
                 }
@@ -613,19 +613,31 @@
         }
 
 	let face_up = 0;
+	let count = 0;
         function interval2()
 	{
 		if (autoMotion == "up_down")
-			if (face_up == 0)
-			{
-				sendDataFU();
-				face_up = 1;
-			}
-			else
-			{
-				sendDataBD();
-				face_up = 0;
-			}
+		{
+			if (count < 6)
+	      		{
+				if (face_up == 0)
+				{
+					sendDataFU();
+					face_up = 1;
+				}
+				else
+				{
+					sendDataBD();
+					face_up = 0;
+				}
+				count = count + 1;
+	      		}
+	      		else 
+	      		{
+				sendDataRR();
+				count = 0;
+	      		}
+		}
 
 	}
 
