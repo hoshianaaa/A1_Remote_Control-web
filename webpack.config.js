@@ -8,8 +8,8 @@ const serve = new Serve({
   open: true,
   liveReload: false,
   https: {
-    key: fs.readFileSync('/home/pi/demoCA/private/ca.key'),
-    cert: fs.readFileSync('/home/pi/demoCA/ca.crt')
+    key: fs.readFileSync('/root/demoCA/private/ca.key'),
+    cert: fs.readFileSync('/root/demoCA/ca.crt')
   }
 });
 module.exports = {

@@ -55,6 +55,7 @@
                           <option value="none">none</option>
                           <option value="rotate_r">rotate_r</option>
                           <option value="rotate_l">rotate_l</option>
+                          <option value="up_down">up_down</option>
                         </select>
                         </p>
                         <p>
@@ -611,9 +612,27 @@
                 document.querySelector("#messages").value = L0 + Lv + L1 + PTZ + SP + L2 + L3 + L4 + L5 + L6 + L7 + L8 + L9 + L10;
         }
 
+	let face_up = 0;
+        function interval2()
+	{
+		if (autoMotion == "up_down")
+			if (face_up == 0)
+			{
+				sendDataFU();
+				face_up = 1;
+			}
+			else
+			{
+				sendDataBD();
+				face_up = 0;
+			}
+
+	}
+
         function startfnc()
         {
                 setInterval("hyoji()",300);
+                setInterval("interval2()",3000);
         }
 
         function onMessage2(e) {
