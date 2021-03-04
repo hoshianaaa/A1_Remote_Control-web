@@ -529,7 +529,8 @@
 
                 //speed change
                 //0: 48 1:49 ... 9:57
-                if (event.keyCode > 47 && event.keyCode < 58){
+                //0: 48 1:49 ... 5:53
+                if (event.keyCode > 47 && event.keyCode < 54){
                         sendDataSpeed(event.keyCode);
                         SPEED_LEVEL = event.keyCode - 48;
                         console.log("change speed");
