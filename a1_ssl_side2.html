@@ -86,18 +86,9 @@
 
                 </div>
                 <div class="right">
-
-                        <div class="center">
-                                <video id="ptz_monitor" autoplay style="height:40%;width:90%;border: 3px solid gray;"></video>
-                        </div>
-
-                        <p>
-                        </p>
-
                         <div class="center">
                                 <textarea id="messages" disabled type="text" value="" style=width:90%;height:50%;font-size:10;background:black;color:#00ffff;></textarea>
                         </div>
-
                 </div>
       </div>
       <script src="https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2020.2.1/dist/ayame.js"></script>
@@ -178,7 +169,7 @@
           conn6 = Ayame.connection(signalingUrl, roomId+"-6", options, true); // temp sensor
           conn8 = Ayame.connection(signalingUrl, roomId+"-8", options, true); // right_monitor
           conn9 = Ayame.connection(signalingUrl, roomId+"-9", options, true); // left_monitor
-          conn10 = Ayame.connection(signalingUrl, roomId+"-10", options, true); // ptz_monitor
+          //conn10 = Ayame.connection(signalingUrl, roomId+"-10", options, true); // ptz_monitor
           conn11 = Ayame.connection(signalingUrl, roomId+"-11", options, true); // ptz_controll
 
           //A1
@@ -235,13 +226,14 @@
           await delay(1000);
 
           //ptz_monitor
-          conn10.on('open', ({authzMetadata}) => console.log(authzMetadata));
-          conn10.on('disconnect', (e) => console.log(e));
-          conn10.on('addstream', (e) => {
-            document.querySelector('#ptz_monitor').srcObject = e.stream;
-          });
-          await conn10.connect(null);
-          await delay(1000);
+	
+          //conn10.on('open', ({authzMetadata}) => console.log(authzMetadata));
+          //conn10.on('disconnect', (e) => console.log(e));
+          //conn10.on('addstream', (e) => {
+          //  document.querySelector('#ptz_monitor').srcObject = e.stream;
+          //});
+          //await conn10.connect(null);
+          //await delay(1000);
 
           //ptz_control
           conn11.on('open', async (e) => {
@@ -314,6 +306,10 @@
           await conn6.connect(null);
 
           startfnc();
+
+	url = '../ptz_camera.html?roomId=' + roomId + '-10';
+	console.log(url)
+	var Win1 = window.open(url, 'subWindow', 'width=' + 600 + ',height=' + 400 + '');
 
         };
 
