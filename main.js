@@ -1,4 +1,4 @@
-const signalingUrl = 'ws://198.13.39.197:3000/signaling';
+const signalingUrl = 'ws://45.32.51.11:3000/signaling';
 let roomId = 'TS-A1-001';
 let clientId = null;
 let videoCodec = null;

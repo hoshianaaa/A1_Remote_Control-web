@@ -1,0 +1,723 @@
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>A1 Remote Control</title>
+        <link rel="stylesheet" href="https://cdn.rawgit.com/Chalarangelo/mini.css/v3.0.1/dist/mini-default.min.css">
+    </head>
+    <body>
+        <style>
+
+        .site-box {
+                box-sizing: border-box;
+                margin: 0;
+                color: lightgray;
+                font-size: 10px;
+                background-color: #222222;
+                height: 100%;
+        }
+
+        .top {
+                width: 100%;
+                height: 20%;
+        }
+
+        .left {
+                float: left;
+                width: 70%;
+                height: 80%;
+        }
+
+        .right {
+                float: right;
+                width: 30%;
+                height: 80%;
+        }
+
+        .box {
+                position: relative;
+                border-radius: 4px;/*????*/
+        }
+        .center {
+                text-align:center;
+        }
+
+        </style>
+      <div class="site-box">
+                <div class="top">
+                        <p>Robot ID
+                        <input id="roomIdInput" type="text" value=""></input>
+                        <button onclick="startConn();"class="box">connect</button>
+                        <button onclick="disconnect();"class="box">disconnect</button>
+                        <button onclick="startConnVoice();"class="box">voice on</button>
+                        <button onclick="disconnectVoice();"class="box">voice off</button>
+                        <button onclick="sendDataRebootRaspi1();"class="box">reboot 1</button>
+                        <button onclick="sendDataRebootRaspi2();"class="box">reboot 2</button>
+                        　Auto
+                        <select id="auto-motion" onChange="onChangeAutoMotion();">
+                          <option value="none">none</option>
+                          <option value="rotate_r">rotate_r</option>
+                          <option value="rotate_l">rotate_l</option>
+                          <option value="up_down">up_down</option>
+                        </select>
+                        </p>
+                        <p>
+                        <audio id="remote-audio" autoplay controls style="height:40px;"></audio>
+                        </p>
+                </div>
+                <div class="left">
+                        <div class="center">
+                                <video id="main_monitor" autoplay style="height:40%;width:90%;border: 3px solid gray;"></video>
+                        </div>
+
+                        <p>
+                        </p>
+
+                        <div class="center">
+                                <video id="left_monitor" autoplay style="height:20%;width:44%;border: 3px solid gray;"></video>
+                                <video id="right_monitor" autoplay style="height:20%;width:44%;border: 3px solid gray;"></video>
+                        </div>
+
+                        <p>
+                        </p>
+
+                        <div class="center">
+                                <video id="back_monitor" autoplay style="height:20%;width:44%;border: 3px solid gray;"></video>
+                        </div>
+
+                <div class="right">
+
+                        <div class="center">
+                                <video id="map_monitor" autoplay style="height:40%;width:90%;border: 3px solid gray;"></video>
+                        </div>
+
+                        <p>
+                        </p>
+
+                        <div class="center">
+                                <textarea id="messages" disabled type="text" value="" style=width:90%;height:50%;font-size:10;background:black;color:#00ffff;></textarea>
+                        </div>
+
+                </div>
+
+      </div>
+      <script src="https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2020.2.1/dist/ayame.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.7.0/qs.min.js"></script>
+      <script src="./main.js"></script>
+      <script type="text/javascript">
+
+        let SPEED_LEVEL = 2;
+        const options = Ayame.defaultOptions;
+        options.clientId = clientId ? clientId : options.clientId;
+        if (signalingKey) {
+          options.signalingKey = signalingKey;
+        }
+        options.video.direction = 'recvonly';
+        let conn0,conn1,conn2,conn3,conn4,conn5,conn6;
+
+        const disconnectVoice = () => {
+          if (conn0) {
+            conn0.disconnect();
+            conn0 = null;
+          }
+        }
+
+        const startConnVoice = async () => {
+          if (conn0!=1) {
+                  conn0 = Ayame.connection(signalingUrl, roomId+"-0", options, true); // voice
+
+                  const mediaStream = await navigator.mediaDevices.getUserMedia({audio: true, video: false})
+
+                  conn0.on('open', async (e) => {
+                  });
+
+                  conn0.on('disconnect', (e) => console.log(e));
+                  conn0.on('addstream', (e) => {
+                    document.querySelector('#remote-audio').srcObject = e.stream;
+                  });
+                await conn0.connect(mediaStream);
+          }
+        }
+
+        const disconnect = () => {
+
+          disconnectVoice();
+
+          if (conn1) {
+            conn1.disconnect();
+          }
+          if (conn2) {
+            conn1.disconnect();
+          }
+          if (conn3) {
+            conn1.disconnect();
+          }
+          if (conn4) {
+            conn4.disconnect();
+          }
+          if (conn5) {
+            conn5.disconnect();
+          }
+          if (conn6) {
+            conn6.disconnect();
+          }
+        }
+        let dataChannel1 = null; // A1
+        let dataChannel2 = null; // sensor1
+        let dataChannel3 = null; // sensor2
+        let dataChannel4 = null; // temp sensor
+        let dataChannel11 = null; // ptz val
+
+        const label = 'dataChannel';
+        const startConn = async () => {
+          options.video.codec = videoCodec;
+          conn1 = Ayame.connection(signalingUrl, roomId+"-1", options, true); // A1_controll
+          conn2 = Ayame.connection(signalingUrl, roomId+"-2", options, true); // main_monitor
+          conn3 = Ayame.connection(signalingUrl, roomId+"-3", options, true); // _monitor
+          conn4 = Ayame.connection(signalingUrl, roomId+"-4", options, true); // sensor1
+          conn5 = Ayame.connection(signalingUrl, roomId+"-5", options, true); // sensor2
+          conn6 = Ayame.connection(signalingUrl, roomId+"-6", options, true); // temp sensor
+          conn8 = Ayame.connection(signalingUrl, roomId+"-8", options, true); // right_monitor
+          conn9 = Ayame.connection(signalingUrl, roomId+"-9", options, true); // left_monitor
+          conn11 = Ayame.connection(signalingUrl, roomId+"-11", options, true); // ptz_controll
+          conn12 = Ayame.connection(signalingUrl, roomId+"-12", options, true); // map_monitor
+
+          //A1
+          conn1.on('open', async (e) => {
+            console.log(dataChannel1);
+            dataChannel1 = await conn1.createDataChannel(label);
+          });
+          conn1.on('datachannel', (channel) => {
+            if (!dataChannel1) {
+              dataChannel1 = channel;
+            }
+          });
+          conn1.on('disconnect', (e) => console.log(e));
+          await conn1.connect(null);
+          await delay(1000);
+
+          startConnVoice();
+          await delay(1000);
+
+          //main_monitor
+          conn2.on('open', ({authzMetadata}) => console.log(authzMetadata));
+          conn2.on('disconnect', (e) => console.log(e));
+          conn2.on('addstream', (e) => {
+            document.querySelector('#main_monitor').srcObject = e.stream;
+          });
+          await conn2.connect(null);
+          await delay(1000);
+
+          //back_monitor
+          conn3.on('open', ({authzMetadata}) => console.log(authzMetadata));
+          conn3.on('disconnect', (e) => console.log(e));
+          conn3.on('addstream', (e) => {
+            document.querySelector('#back_monitor').srcObject = e.stream;
+          });
+          await conn3.connect(null);
+          await delay(1000);
+
+          //right_monitor
+          conn8.on('open', ({authzMetadata}) => console.log(authzMetadata));
+          conn8.on('disconnect', (e) => console.log(e));
+          conn8.on('addstream', (e) => {
+            document.querySelector('#right_monitor').srcObject = e.stream;
+          });
+          await conn8.connect(null);
+          await delay(1000);
+
+          //left_monitor
+          conn9.on('open', ({authzMetadata}) => console.log(authzMetadata));
+          conn9.on('disconnect', (e) => console.log(e));
+          conn9.on('addstream', (e) => {
+            document.querySelector('#left_monitor').srcObject = e.stream;
+          });
+          await conn9.connect(null);
+          await delay(1000);
+
+          //ptz_monitor
+	
+          //conn10.on('open', ({authzMetadata}) => console.log(authzMetadata));
+          //conn10.on('disconnect', (e) => console.log(e));
+          //conn10.on('addstream', (e) => {
+          //  document.querySelector('#ptz_monitor').srcObject = e.stream;
+          //});
+          //await conn10.connect(null);
+          //await delay(1000);
+
+          //ptz_control
+          conn11.on('open', async (e) => {
+            console.log(dataChannel11);
+            dataChannel11 = await conn11.createDataChannel(label);
+            if (dataChannel11) {
+              dataChannel11.onmessage = onMessage11;
+            }
+          });
+          conn11.on('datachannel', (channel) => {
+            if (!dataChannel11) {
+              dataChannel11 = channel;
+              dataChannel11.onmessage = onMessage11;
+            }
+          });
+          conn11.on('disconnect', (e) => console.log(e));
+          await conn11.connect(null);
+          await delay(1000);
+
+          //map_monitor
+	
+          conn12.on('open', ({authzMetadata}) => console.log(authzMetadata));
+          conn12.on('disconnect', (e) => console.log(e));
+          conn12.on('addstream', (e) => {
+            document.querySelector('#ptz_monitor').srcObject = e.stream;
+          });
+          await conn12.connect(null);
+          await delay(1000);
+
+
+          //sensor1
+          conn4.on('open', async (e) => {
+            console.log(dataChannel2);
+            dataChannel2 = await conn4.createDataChannel(label);
+            if (dataChannel2) {
+              dataChannel2.onmessage = onMessage2;
+            }
+          });
+          conn4.on('datachannel', (channel) => {
+            if (!dataChannel2) {
+              dataChannel2 = channel;
+              dataChannel2.onmessage = onMessage2;
+            }
+          });
+          conn4.on('disconnect', (e) => console.log(e));
+          await conn4.connect(null);
+
+          //sensor2
+          conn5.on('open', async (e) => {
+            console.log(dataChannel3);
+            dataChannel3 = await conn5.createDataChannel(label);
+            if (dataChannel3) {
+              dataChannel3.onmessage = onMessage3;
+            }
+          });
+          conn5.on('datachannel', (channel) => {
+            if (!dataChannel3) {
+              dataChannel3 = channel;
+              dataChannel3.onmessage = onMessage3;
+            }
+          });
+          conn5.on('disconnect', (e) => console.log(e));
+          await conn5.connect(null);
+
+          //temp sensor
+          conn6.on('open', async (e) => {
+            console.log(dataChannel4);
+            dataChannel4 = await conn6.createDataChannel(label);
+            if (dataChannel4) {
+              dataChannel4.onmessage = onMessage4;
+            }
+          });
+          conn6.on('datachannel', (channel) => {
+            if (!dataChannel4) {
+              dataChannel4 = channel;
+              dataChannel4.onmessage = onMessage4;
+            }
+          });
+          conn6.on('disconnect', (e) => console.log(e));
+          await conn6.connect(null);
+
+          startfnc();
+
+	url = '../ptz_camera.html?roomId=' + roomId + '-10';
+	console.log(url)
+	var Win1 = window.open(url, 'subWindow', 'width=' + 600 + ',height=' + 400 + '');
+
+        };
+
+       const sendDataRebootRaspi1 = () => {
+          const data = 'q';
+          console.log(data);
+          console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+
+        const sendDataL = () => {
+          const data = 'a';
+          console.log(data);
+          console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataR = () => {
+          const data = 'd';
+          console.log(data);
+          console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataF = () => {
+          const data = 'w';
+          console.log(data);
+          console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataB = () => {
+          const data = 's';
+          console.log(data);
+          console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataRR = () => {
+          const data = 'c';
+          console.log(data);
+          console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataRL = () => {
+          const data = 'x';
+          console.log(data);
+          console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataFU = () => {
+          const data = 'i';
+          console.log(data);
+          console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataFD = () => {
+          const data = 'k';
+          console.log(data);
+          console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataBD = () => {
+          const data = 'n';
+          console.log(data);
+          console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataSpeed = (speed) => {
+          const data = String(speed);
+          console.log(data);
+          console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataRebootRaspi2 = () => {
+          const data = 'q';
+          console.log(data);
+          console.log(dataChannel11);
+          if (dataChannel11 && dataChannel11.readyState === 'open') {
+            dataChannel11.send(data);
+          }
+        };
+        const sendDataPtzInit = () => {
+          const data = 'a';
+          console.log(data);
+          console.log(dataChannel11);
+          if (dataChannel11 && dataChannel11.readyState === 'open') {
+            dataChannel11.send(data);
+          }
+        };
+        const sendDataPtzUp = () => {
+          const data = 'i';
+          console.log(data);
+          console.log(dataChannel11);
+          if (dataChannel11 && dataChannel11.readyState === 'open') {
+            dataChannel11.send(data);
+          }
+        };
+        const sendDataPtzDown = () => {
+          const data = 'k';
+          console.log(data);
+          console.log(dataChannel11);
+          if (dataChannel11 && dataChannel11.readyState === 'open') {
+            dataChannel11.send(data);
+          }
+        };
+        const sendDataPtzLeft = () => {
+          const data = 'j';
+          console.log(data);
+          console.log(dataChannel11);
+          if (dataChannel11 && dataChannel11.readyState === 'open') {
+            dataChannel11.send(data);
+          }
+        };
+        const sendDataPtzRight = () => {
+          const data = 'l';
+          console.log(data);
+          console.log(dataChannel11);
+          if (dataChannel11 && dataChannel11.readyState === 'open') {
+            dataChannel11.send(data);
+          }
+        };
+        const sendDataPtzZoomIn = () => {
+          const data = 'm';
+          console.log(data);
+          console.log(dataChannel11);
+          if (dataChannel11 && dataChannel11.readyState === 'open') {
+            dataChannel11.send(data);
+          }
+        };
+        const sendDataPtzZoomOut = () => {
+          const data = 'n';
+          console.log(data);
+          console.log(dataChannel11);
+          if (dataChannel11 && dataChannel11.readyState === 'open') {
+            dataChannel11.send(data);
+          }
+        };
+        //keyボード入力でA1を操作
+        window.addEventListener('keydown', function(event) {
+
+                console.log(event.keyCode);
+                //e 69  d 68  f 70  s 83  j 74  l 76
+                //0 48
+
+                if (event.keyCode == 69){
+                        sendDataF();
+                        console.log("forward");
+                }
+                if (event.keyCode == 83){
+                        sendDataL();
+                        console.log("left");
+                }
+                if (event.keyCode == 68){
+                        sendDataB();
+                        console.log("back");
+                }
+                if (event.keyCode == 70){
+                        sendDataR();
+                        console.log("right");
+                }
+                if (event.keyCode == 74){
+                        sendDataRL();
+                        console.log("rotate left");
+                }
+                if (event.keyCode == 76){
+                        sendDataRR();
+                        console.log("rotate right");
+                }
+                if (event.keyCode == 73){
+                        sendDataFU();
+                        console.log("face up");
+                }
+                if (event.keyCode == 75){
+                        sendDataFD();
+                        console.log("face down");
+                }
+                if (event.keyCode == 78){
+                        sendDataBD();
+                        console.log("body down");
+                }
+
+                //space 32 上矢印 38 下矢印 40 左矢印 37 右矢印 39
+
+                if (event.keyCode == 32){
+                        sendDataPtzInit();
+                        console.log("ptz init");
+                }
+                if (event.keyCode == 38){
+                        sendDataPtzUp();
+                        console.log("ptz up");
+                }
+                if (event.keyCode == 40){
+                        sendDataPtzDown();
+                        console.log("ptz down");
+                }
+                if (event.keyCode == 37){
+                        sendDataPtzLeft();
+                        console.log("ptz left");
+                }
+                if (event.keyCode == 39){
+                        sendDataPtzRight();
+                        console.log("ptz right");
+                }
+                if (event.keyCode == 33 || event.keyCode == 90){
+                        sendDataPtzZoomIn();
+                        console.log("ptz zoom in");
+                }
+                if (event.keyCode == 34 || event.keyCode == 88){
+                        sendDataPtzZoomOut();
+                        console.log("ptz zoom out");
+                }
+
+
+                //speed change
+                //0: 48 1:49 ... 9:57
+                //0: 48 1:49 ... 5:53
+                if (event.keyCode > 47 && event.keyCode < 54){
+                        sendDataSpeed(event.keyCode);
+                        SPEED_LEVEL = event.keyCode - 48;
+                        console.log("change speed");
+                        console.log("Speed Level:",event.keyCode - 48)
+                }
+        });
+
+        const Debug = () => {
+          console.log("*** debug ***");
+          console.log("A1:"+dataChannel1);
+        };
+
+        document.querySelector("#roomIdInput").value = roomId;
+/*
+        let dataChannel1 = null; // A1
+        let dataChannel2 = null; // sensor1
+        let dataChannel3 = null; // sensor2
+        let dataChannel4 = null; // temp sensor
+*/
+
+        var s1_val = null;
+        var s2_val = null;
+        var tmp_val = null;
+        var ptz_val = null;
+
+        let autoMotion = null;
+
+        function hyoji()
+        {
+                L0 = "*** a1 state ***" + "\n";
+
+                if (conn0)voice = 1;
+                else voice = 0;
+                Lv = "voice:" + voice + "\n";
+
+                if (dataChannel1)A1_Control = 1;
+                else A1_Control = 0;
+                L1 = "control:" + A1_Control + "\n";
+
+                if (dataChannel11)PTZ_Control = 1;
+                else PTZ_Control = 0;
+                PTZ = "ptz control:" + PTZ_Control + "\n";
+
+                SP = "Speed Level:" + SPEED_LEVEL + "\n";
+
+                if (dataChannel2)sensor1 = 1;
+                else sensor1 = 0;
+                L2 = "sensor1:" + sensor1 + "\n";
+
+                if (dataChannel3)sensor2 = 1;
+                else sensor2 = 0;
+                L3 = "sensor2:" + sensor2 + "\n";
+
+                if (dataChannel4)tmp_sensor = 1;
+                else tmp_sensor = 0;
+                L4 = "tmp sensor:" + tmp_sensor + "\n";
+
+                L5 = "\n" + "*** sensor value ***" + "\n";
+
+                L6 = "sensor1:" + s1_val + "\n";
+                L7 = "sensor2:" + s2_val + "\n";
+                L8 = "tmp sensor:" + tmp_val + "\n";
+
+                L9 = "auto motion:" + autoMotion + "\n";
+
+                L10 = "ptz val:" + ptz_val + "\n";
+
+                if (autoMotion == "rotate_r")
+                {
+                        sendDataRR();
+                        console.log("rotate right");
+                }
+
+                if (autoMotion == "rotate_l")
+                {
+                        sendDataRL();
+                        console.log("rotate l");
+                }
+
+                document.querySelector("#messages").value = L0 + Lv + L1 + PTZ + SP + L2 + L3 + L4 + L5 + L6 + L7 + L8 + L9 + L10;
+        }
+
+	let face_up = 0;
+	let count = 0;
+        function interval2()
+	{
+		if (autoMotion == "up_down")
+		{
+			if (count < 6)
+	      		{
+				if (face_up == 0)
+				{
+					sendDataFU();
+					face_up = 1;
+				}
+				else
+				{
+					sendDataBD();
+					face_up = 0;
+				}
+				count = count + 1;
+	      		}
+	      		else 
+	      		{
+				sendDataRR();
+				count = 0;
+	      		}
+		}
+
+	}
+
+        function startfnc()
+        {
+                setInterval("hyoji()",300);
+                setInterval("interval2()",3000);
+        }
+
+        function onMessage2(e) {
+                const moji = String.fromCharCode.apply(null, new Uint8Array(e.data))
+                s1_val = Number(moji);
+        }
+
+        function onMessage3(e) {
+                const moji = String.fromCharCode.apply(null, new Uint8Array(e.data))
+                s2_val = Number(moji);
+        }
+
+        function onMessage4(e) {
+                const moji = String.fromCharCode.apply(null, new Uint8Array(e.data))
+                tmp_val = Number(moji);
+        }
+
+        function onMessage11(e) {
+                const moji = String.fromCharCode.apply(null, new Uint8Array(e.data))
+                //ptz_val = Number(moji);
+                ptz_val = moji;
+        }
+
+        function onChangeAutoMotion() {
+          autoMotion = document.getElementById("auto-motion").value;
+          if (autoMotion == 'none') {
+            autoMotion = null;
+          }
+        }
+
+        const roomIdInput = document.getElementById("roomIdInput");
+        roomIdInput.addEventListener('change', (event) => {
+          console.log(event);
+          roomId = event.target.value;
+        });
+
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+
+        </script>
+  </body>
+</html>
