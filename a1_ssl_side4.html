@@ -568,7 +568,7 @@
 	});
 
 	window.addEventListener("gamepaddisconnected", function() {
-	  gamepadInfo.innerHTML = "Waiting for gamepad.";
+		console.log("disconnect gamepad");
 	});
 
 	var interval = setInterval(gameLoop, 100);
