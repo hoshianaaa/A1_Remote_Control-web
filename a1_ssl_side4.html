@@ -23,13 +23,13 @@
 
         .left {
                 float: left;
-                width: 60%;
+                width: 90%;
                 height: 80%;
         }
 
         .right {
                 float: right;
-                width: 40%;
+                width: 10%;
                 height: 80%;
         }
 
@@ -83,23 +83,13 @@
                         <div class="center">
                                 <video id="back_monitor" autoplay style="height:20%;width:44%;border: 3px solid gray;"></video>
                         </div>
-                </div>
 
+                </div>
                 <div class="right">
-
                         <div class="center">
-                                <video id="map_monitor" autoplay style="height:50%;width:90%;border: 3px solid gray;"></video>
+                                <textarea id="messages" disabled type="text" value="" style=width:90%;height:50%;font-size:10;background:black;color:#00ffff;></textarea>
                         </div>
-
-                        <p>
-                        </p>
-
-                        <div class="center">
-                                <textarea id="messages" disabled type="text" value="" style=width:90%;height:40%;font-size:10;background:black;color:#00ffff;></textarea>
-                        </div>
-
                 </div>
-
       </div>
       <script src="https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2020.2.1/dist/ayame.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.7.0/qs.min.js"></script>
@@ -114,7 +104,6 @@
         }
         options.video.direction = 'recvonly';
         let conn0,conn1,conn2,conn3,conn4,conn5,conn6;
-	let conn12;
 
         const disconnectVoice = () => {
           if (conn0) {
@@ -180,8 +169,8 @@
           conn6 = Ayame.connection(signalingUrl, roomId+"-6", options, true); // temp sensor
           conn8 = Ayame.connection(signalingUrl, roomId+"-8", options, true); // right_monitor
           conn9 = Ayame.connection(signalingUrl, roomId+"-9", options, true); // left_monitor
+          //conn10 = Ayame.connection(signalingUrl, roomId+"-10", options, true); // ptz_monitor
           conn11 = Ayame.connection(signalingUrl, roomId+"-11", options, true); // ptz_controll
-          conn12 = Ayame.connection(signalingUrl, roomId+"-12", options, true); // map_monitor
 
           //A1
           conn1.on('open', async (e) => {
@@ -264,16 +253,6 @@
           await conn11.connect(null);
           await delay(1000);
 
-          //map_monitor
-	
-          conn12.on('open', ({authzMetadata}) => console.log(authzMetadata));
-          conn12.on('disconnect', (e) => console.log(e));
-          conn12.on('addstream', (e) => {
-            document.querySelector('#map_monitor').srcObject = e.stream;
-          });
-          await conn12.connect(null);
-          await delay(1000);
-
 
           //sensor1
           conn4.on('open', async (e) => {
@@ -329,8 +308,15 @@
           startfnc();
 
 	url = '../ptz_camera.html?roomId=' + roomId + '-10';
+	url2 = '../map_camera.html?roomId=' + roomId + '-12';
 	console.log(url)
+	console.log(url2)
 	var Win1 = window.open(url, 'subWindow', 'width=' + 600 + ',height=' + 400 + '');
+	var Win2 = window.open(url2, 'subWindow2', 'width=' + 600 + ',height=' + 400 + '');
+
+
+	//var gamepad_list = navigator.getGamepads();
+	//console.log(gamepad_list)
 
         };
 

@@ -1,0 +1,44 @@
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>MapCamera</title>
+        <link rel="stylesheet" href="https://cdn.rawgit.com/Chalarangelo/mini.css/v3.0.1/dist/mini-default.min.css">
+    </head>
+    <style>
+	.bg {
+	    background-color: "#000";
+	    text-align:center;
+	}
+    </style>
+    <body>
+      <div class="bg">
+        <video id="remote-video" autoplay controls style="width: auto; height: 100%; border: 1px solid black;"></video>
+      </div>
+      <script src="https://cdn.jsdelivr.net/npm/@open-ayame/ayame-web-sdk@2020.3.0/dist/ayame.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.7.0/qs.min.js"></script>
+      <script src="./main.js"></script>
+      <script type="text/javascript">
+        const options = Ayame.defaultOptions;
+        options.clientId = clientId ? clientId : options.clientId;
+        if (signalingKey) {
+          options.signalingKey = signalingKey;
+        }
+        options.video.direction = 'recvonly';
+        options.audio.direction = 'recvonly';
+        let conn;
+        const disconnect = () => {
+          if (conn) {
+            conn.disconnect();
+          }
+        }
+          options.video.codec = videoCodec;
+          conn = Ayame.connection(signalingUrl, roomId, options, true);
+          conn.connect(null);
+          conn.on('open', ({authzMetadata}) => console.log(authzMetadata));
+          conn.on('disconnect', (e) => console.log(e));
+          conn.on('addstream', (e) => {
+            document.querySelector('#remote-video').srcObject = e.stream;
+          });
+      </script>
+  </body>
+</html>
