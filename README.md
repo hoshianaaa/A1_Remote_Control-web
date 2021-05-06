@@ -1,3 +1,10 @@
+## 開き方
+
+Microsoft Edgeで以下のURLにアクセス
+```
+https://45.32.51.11:5000/a1_ssl_side4.html?roomId=TK-001
+```
+
 ## VULTR
 
 ```
