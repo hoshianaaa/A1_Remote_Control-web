@@ -1,3 +1,16 @@
+## VULTR
+
+```
+VULTR:アカウント
+メアド:ryoutaro.hoshina@techshare.co.jp
+パスワード:Techshare0105
+server
+GLOBAL_IP:45.32.51.11
+Username:root
+Password:P*r7]wW[?EM5P3mD
+```
+
+
 # Ayame Web SDK サンプル
 
 [OpenAyame/ayame-web-sdk](https://github.com/OpenAyame/ayame-web-sdk) のサンプル集です。
@@ -31,20 +44,6 @@ query string で指定可能です。
 ```
 http://localhost:5000/recvonly.html?clientId=hoge&roomId=fuga
 ```
-
-## VULTR
-
-```
-VULTR:アカウント
-メアド:ryoutaro.hoshina@techshare.co.jp
-パスワード:Techshare0105
-server
-GLOBAL_IP:45.32.51.11
-Username:root
-```
-Password:P*r7]wW[?EM5P3mD
-
-
 
 
 query string で指定可能です。
