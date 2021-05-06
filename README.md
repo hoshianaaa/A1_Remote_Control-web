@@ -6,7 +6,7 @@ https://45.32.51.11:5000/a1_ssl_side4.html?roomId=TK-001
 ```
 
 ## VULTR
-
+teraterm等でアクセスできる
 ```
 VULTR:アカウント
 メアド:ryoutaro.hoshina@techshare.co.jp
