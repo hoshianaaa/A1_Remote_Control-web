@@ -42,7 +42,7 @@
         }
 
         </style>
-      <div class="site-box">
+      	<div class="site-box">
                 <div class="top">
                         <p>Robot ID
                         <input id="roomIdInput" type="text" value=""></input>
@@ -335,20 +335,38 @@
             dataChannel1.send(data);
           }
         };
+
         const sendDataR = () => {
-          const data = 'd';
-          console.log(data);
+
+ 	  var byteView = new Uint8Array([0xFF,0x0A]);
+
+	  var strView = String.fromCharCode.apply(null, byteView);
+
+          console.log(byteView);
+          console.log(strView);
           console.log(dataChannel1);
           if (dataChannel1 && dataChannel1.readyState === 'open') {
-            dataChannel1.send(data);
+            dataChannel1.send(byteView);
           }
         };
+
         const sendDataF = () => {
-          const data = 'w';
-          console.log(data);
+
+	  var data = new Float32Array([0.1]); 
+
+	  var buffer = new ArrayBuffer(data.byteLength);
+	  var floatView = new Float32Array(buffer).set(data);
+ 	  var byteView = new Uint8Array(buffer);
+
+	  var strView = String.fromCharCode.apply(null, byteView);
+
+          console.log(floatView);
+          console.log(byteView);
+          console.log(strView);
+          console.log(0xFF);
           console.log(dataChannel1);
           if (dataChannel1 && dataChannel1.readyState === 'open') {
-            dataChannel1.send(data);
+            dataChannel1.send(strView);
           }
         };
         const sendDataB = () => {
@@ -564,7 +582,7 @@
 
 	  console.log("Gamepad connected at index " + gp.index + ": " + gp.id + ". It has " + gp.buttons.length + " buttons and " + gp.axes.length + " axes.");
 
-	  //gameLoop();
+	  gameLoop();
 	});
 
 	window.addEventListener("gamepaddisconnected", function() {
@@ -584,7 +602,7 @@
 	  	var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
 	        var gp = gamepads[0];
 	        if (!gp) return;
-	      /*
+	      
 	      	console.log("game pad val");
 	      	console.log(" - buttons");
 	      	console.log("0:" + buttonPressed(gp.buttons[0]));
@@ -595,7 +613,7 @@
 	      	console.log("1:" + gp.axes[1]);
 	      	console.log("2:" + gp.axes[2]);
 	      	console.log("3:" + gp.axes[3]);
-	      */
+	      
 	};
 
         const Debug = () => {
