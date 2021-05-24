@@ -96,6 +96,8 @@
       <script src="./main.js"></script>
       <script type="text/javascript">
 
+
+	let MIN_INPUT = 0.2;
         let SPEED_LEVEL = 2;
         const options = Ayame.defaultOptions;
         options.clientId = clientId ? clientId : options.clientId;
@@ -327,6 +329,13 @@
           }
         };
 
+	// id
+	// 1. velocity(vx, vy, vr)
+	// 2. slam 1: open, 2: clear map, 3: save map
+	// 3. navigation 1: open, 3: set start number, 4: start navigation, 5: stop navigation
+	// 4. set initial pos 1: open, 2: velocity(vx, vy, vr)
+	// 5. waypoint editor 1: open, 2: add, 3: del, 4: select(up), 5: select(down), 6: velocity(vx, vy, vth), 7: all clear
+
         //keyボード入力でA1を操作
         window.addEventListener('keydown', function(event) {
 
@@ -340,75 +349,83 @@
 				     };
 			sendData(data);
 		}
-
+		// e
                 if (event.keyCode == 69){
 			const data = {
 					id: 'v', 
-					data: [0.5, 0.0, 0.0]
+					data: [SPEED_LEVEL/10, 0.0, 0.0]
 				     };
                         sendData(data);
                         console.log("forward");
                 }
+		// s
                 if (event.keyCode == 83){
 			const data = {
 					id: 'v', 
-					data: [0.0, 0.5, 0.0]
+					data: [0.0, SPEED_LEVEL/10, 0.0]
 				     };
                         sendData(data);
                         console.log("left");
                 }
+		// d
                 if (event.keyCode == 68){
 			const data = {
 					id: 'v', 
-					data: [-0.5, 0.0, 0.0]
+					data: [-SPEED_LEVEL/10, 0.0, 0.0]
 				     };
                         sendData(data);
                         console.log("back");
                 }
+		// f
                 if (event.keyCode == 70){
 			const data = {
 					id: 'v',
-					data: [0.0, -0.5, 0.0]
+					data: [0.0, -SPEED_LEVEL/10, 0.0]
 				     };
                         sendData(data);
                         console.log("right");
                 }
+		// j
                 if (event.keyCode == 74){
 			const data = {
-					id: 't',
-					data: [0.0, 0.0, -0.5]
+					id: 'r',
+					data: [0.0, 0.0, -SPEED_LEVEL/10]
 				     };
 			sendData(data);
                         console.log("rotate left");
                 }
+		// l
                 if (event.keyCode == 76){
 			const data = {
-					id: 't',
-					data: [0.0, 0.0, 0.5]
+					id: 'r',
+					data: [0.0, 0.0, SPEED_LEVEL/10]
 				     };
                         sendData(data);
                         console.log("rotate right");
                 }
+		// i
                 if (event.keyCode == 73){
 			const data = {
-					id: 't',
-					data: [0.0, -0.5, 0.0]
+					id: 'r',
+					data: [0.0, -SPEED_LEVEL/10, 0.0]
 				     };
                         sendData(data);
                         console.log("face up");
                 }
+		// k
                 if (event.keyCode == 75){
 			const data = {
-					id: 't',
-					data: [0.0, 0.5, 0.0]
+					id: 'r',
+					data: [0.0, SPEED_LEVEL/10, 0.0]
 				     };
                         sendData(data);
                         console.log("face down");
                 }
+		// n
                 if (event.keyCode == 78){
 			const data = {
-					id: 'v',
-					data: [0.0, 0.0, -0.5]
+					id: 'r',
+					data: [0.0, -SPEED_LEVEL/10, 0.0]
 				     };
                         sendData(data);
                         console.log("body down");
@@ -416,32 +433,67 @@
 
                 //space 32 上矢印 38 下矢印 40 左矢印 37 右矢印 39
 
+		// space
                 if (event.keyCode == 32){
-                        sendDataPtzInit();
+			const data = {
+					id: 'p', 
+					data: 'Init'
+				     };
+                        sendData(data);
                         console.log("ptz init");
                 }
+		// up
                 if (event.keyCode == 38){
-                        sendDataPtzUp();
+			const data = {
+					id: 'p', 
+					data: 'up'
+				     };
+                        sendData(data);
                         console.log("ptz up");
                 }
+		// down
                 if (event.keyCode == 40){
-                        sendDataPtzDown();
+			const data = {
+					id: 'p', 
+					data: 'down'
+				     };
+                        sendData(data);
                         console.log("ptz down");
                 }
+		// left
                 if (event.keyCode == 37){
-                        sendDataPtzLeft();
+			const data = {
+					id: 'p', 
+					data: 'left'
+				     };
+                        sendData(data);
                         console.log("ptz left");
                 }
+		// right
                 if (event.keyCode == 39){
-                        sendDataPtzRight();
+			const data = {
+					id: 'p', 
+					data: 'right'
+				     };
+                        sendData(data);
                         console.log("ptz right");
                 }
+		// PgUp or z 
                 if (event.keyCode == 33 || event.keyCode == 90){
-                        sendDataPtzZoomIn();
+			const data = {
+					id: 'p', 
+					data: 'zoomin'
+				     };
+                        sendData(data);
                         console.log("ptz zoom in");
                 }
+		// PgDn or x
                 if (event.keyCode == 34 || event.keyCode == 88){
-                        sendDataPtzZoomOut();
+			const data = {
+					id: 'p', 
+					data: 'zoomout'
+				     };
+                        sendData(data);
                         console.log("ptz zoom out");
                 }
 
@@ -450,7 +502,11 @@
                 //0: 48 1:49 ... 9:57
                 //0: 48 1:49 ... 5:53
                 if (event.keyCode > 47 && event.keyCode < 54){
-                        sendDataSpeed(event.keyCode);
+			const data = {
+					id: 's',
+					data: [event.keyCode - 48]
+				     };
+			sendData(data);
                         SPEED_LEVEL = event.keyCode - 48;
                         console.log("change speed");
                         console.log("Speed Level:",event.keyCode - 48)
@@ -487,20 +543,80 @@
 	      	console.log("game pad val");
 	      	
 		console.log(" - buttons");
+	       // 0: A, 1: B, 2: X, 3: Y, 
+	       // 4: LB, 5: RB, 6: LT, 7: RT, 
+	       // 8: BACK, 9: START, 10: L, 11: R, 
+	       // 12: up, 13: down, 14: left, 15: right
+
 		for(var i=0; i<gp.buttons.length; ++i){
-	      	  console.log("  " + i + ": " + buttonPressed(gp.buttons[i]));
+	      	  // console.log("  " + i + ": " + buttonPressed(gp.buttons[i]));
 		}
+	        // B: add waypoint
+	        if (buttonPressed(gp.buttons[1])) {
+	      		const data = {
+					id: 'p',
+	      				data: 'add'
+	      			     };
+	      		sendData(data);
+	      	}
+	        // A: clear waypoint
+	        if (buttonPressed(gp.buttons[0])) {
+	      		const data = {
+					id: 'p',
+	      				data: 'clear'
+	      			     };
+	      		sendData(data);
+	      	}
+	        // up
+	        if (buttonPressed(gp.buttons[12])) {
+	      		const data = {
+					id: 'p',
+	      				data: 'up'
+	      			     };
+	      		sendData(data);
+	      	}
+	        // down 
+	        if (buttonPressed(gp.buttons[13])) {
+	      		const data = {
+					id: 'p',
+	      				data: 'down'
+	      			     };
+	      		sendData(data);
+	      	}
+	        // left 
+	        if (buttonPressed(gp.buttons[14])) {
+	      		const data = {
+					id: 'p',
+	      				data: 'left'
+	      			     };
+	      		sendData(data);
+	      	}
+	        // right 
+	        if (buttonPressed(gp.buttons[15])) {
+	      		const data = {
+					id: 'p',
+	      				data: 'right'
+	      			     };
+	      		sendData(data);
+	      	}
+
+	      	
 
 	      	console.log(" - axes");
-		for(var i=0; i<gp.axes.length; ++i){
-	      	  console.log("  " + i + ": " + gp.axes[i]);
+		for (var i=0; i<gp.axes.length; ++i) {
+	      	  // console.log("  " + i + ": " + gp.axes[i]);
 		}
 
-	      data = {
+	      	data = {
 	      		id: 'v',
-	      		data: gp.axes
-	      	     }
-	      sendData(data);
+	      		data: [gp.axes[1], gp.axes[0], 0.0]
+	      	};
+	      	sendData(data);
+		data = {
+			id: 'r', 
+			data: [0.0, gp.axes[3], gp.axes[2]]
+	        };
+	      	sendData(data);
 	};
 
         const Debug = () => {
@@ -565,13 +681,21 @@
 
                 if (autoMotion == "rotate_r")
                 {
-                        sendDataRR();
+	      		data = {
+	      			id: 'r',
+	      			data: [0.0, 0.0, 0.5] 
+	      	     	       };
+	      		sendData(data);
                         console.log("rotate right");
                 }
 
                 if (autoMotion == "rotate_l")
                 {
-                        sendDataRL();
+	      		data = {
+	      			id: 'r',
+	      			data: [0.0, 0.0, -0.5] 
+	      	     	       };
+	      		sendData(data);
                         console.log("rotate l");
                 }
 
@@ -588,19 +712,31 @@
 	      		{
 				if (face_up == 0)
 				{
-					sendDataFU();
+	      				data = {
+	      					id: 'r',
+	      					data: [0.0, -0.5, 0.0] 
+	      	     	       		};
+	      				sendData(data);
 					face_up = 1;
 				}
 				else
 				{
-					sendDataBD();
+	      				data = {
+	      					id: 'r',
+	      					data: [0.0, 0.5, 0.0] 
+	      	     	       		};
+	      				sendData(data);
 					face_up = 0;
 				}
 				count = count + 1;
 	      		}
 	      		else 
 	      		{
-				sendDataRR();
+	      			data = {
+	      				id: 'r',
+	      				data: [0.0, 0.0, -0.5] 
+	      	     	       	};
+	      			sendData(data);
 				count = 0;
 	      		}
 		}
