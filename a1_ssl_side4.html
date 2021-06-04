@@ -388,7 +388,7 @@
 		// j
                 if (event.keyCode == 74){
 			const data = {
-					id: 'r',
+					id: 'v',
 					data: [0.0, 0.0, -SPEED_LEVEL/10]
 				     };
 			sendData(data);
@@ -397,7 +397,7 @@
 		// l
                 if (event.keyCode == 76){
 			const data = {
-					id: 'r',
+					id: 'v',
 					data: [0.0, 0.0, SPEED_LEVEL/10]
 				     };
                         sendData(data);
@@ -407,7 +407,7 @@
                 if (event.keyCode == 73){
 			const data = {
 					id: 'r',
-					data: [0.0, -SPEED_LEVEL/10, 0.0]
+					data: [0.0, -SPEED_LEVEL/10, 0.0] 
 				     };
                         sendData(data);
                         console.log("face up");
@@ -416,7 +416,7 @@
                 if (event.keyCode == 75){
 			const data = {
 					id: 'r',
-					data: [0.0, SPEED_LEVEL/10, 0.0]
+					data: [0.0, SPEED_LEVEL/10, 0.0] 
 				     };
                         sendData(data);
                         console.log("face down");
@@ -425,7 +425,7 @@
                 if (event.keyCode == 78){
 			const data = {
 					id: 'r',
-					data: [0.0, -SPEED_LEVEL/10, 0.0]
+					data: [0.0, 0.0, -SPEED_LEVEL/10]
 				     };
                         sendData(data);
                         console.log("body down");
@@ -526,7 +526,7 @@
 		console.log("disconnect gamepad");
 	});
 
-	var interval = setInterval(gameLoop, 1000);
+	var interval = setInterval(gameLoop, 100);
 
 	function buttonPressed(b) {
 		if (typeof(b) == "object") {
@@ -540,83 +540,92 @@
 	        var gp = gamepads[0];
 	        if (!gp) return;
 	      
-	      	console.log("game pad val");
-	      	
-		console.log(" - buttons");
-	       // 0: A, 1: B, 2: X, 3: Y, 
-	       // 4: LB, 5: RB, 6: LT, 7: RT, 
-	       // 8: BACK, 9: START, 10: L, 11: R, 
-	       // 12: up, 13: down, 14: left, 15: right
-
 		for(var i=0; i<gp.buttons.length; ++i){
-	      	  // console.log("  " + i + ": " + buttonPressed(gp.buttons[i]));
+	      	  //console.log("  " + i + ": " + buttonPressed(gp.buttons[i]));
 		}
-	        // B: add waypoint
-	        if (buttonPressed(gp.buttons[1])) {
+
+	        // trig: add waypoint
+	        if (buttonPressed(gp.buttons[0])) {
 	      		const data = {
 					id: 'p',
 	      				data: 'add'
 	      			     };
 	      		sendData(data);
 	      	}
-	        // A: clear waypoint
-	        if (buttonPressed(gp.buttons[0])) {
+	        // key 4: clear waypoint
+	        if (buttonPressed(gp.buttons[3])) {
 	      		const data = {
 					id: 'p',
 	      				data: 'clear'
 	      			     };
 	      		sendData(data);
 	      	}
-	        // up
-	        if (buttonPressed(gp.buttons[12])) {
-	      		const data = {
-					id: 'p',
-	      				data: 'up'
-	      			     };
-	      		sendData(data);
-	      	}
-	        // down 
-	        if (buttonPressed(gp.buttons[13])) {
-	      		const data = {
-					id: 'p',
-	      				data: 'down'
-	      			     };
-	      		sendData(data);
-	      	}
-	        // left 
-	        if (buttonPressed(gp.buttons[14])) {
-	      		const data = {
-					id: 'p',
-	      				data: 'left'
-	      			     };
-	      		sendData(data);
-	      	}
-	        // right 
-	        if (buttonPressed(gp.buttons[15])) {
-	      		const data = {
-					id: 'p',
-	      				data: 'right'
-	      			     };
-	      		sendData(data);
-	      	}
-
-	      	
-
-	      	console.log(" - axes");
-		for (var i=0; i<gp.axes.length; ++i) {
-	      	  // console.log("  " + i + ": " + gp.axes[i]);
+		// key 11: start nav
+		if (buttonPressed(gp.buttons[10])) {
+			const data = {
+					id: 'n',
+					data: 'start'
+			};
+		}
+		// key 12: stop nav
+		if (buttonPressed(gp.buttons[11])) {
+			const data = {
+					id: 'n',
+					data: 'stop'
+			};
 		}
 
-	      	data = {
+
+		for (var i=0; i<gp.axes.length; ++i) {
+	      	  //console.log("  " + i + ": " + gp.axes[i]);
+		}
+
+
+	        // A1 vel(x, y, th)
+	        if (gp.axes[6] == -1) {
+	      	  data = {
 	      		id: 'v',
-	      		data: [gp.axes[1], gp.axes[0], 0.0]
-	      	};
-	      	sendData(data);
-		data = {
-			id: 'r', 
-			data: [0.0, gp.axes[3], gp.axes[2]]
-	        };
-	      	sendData(data);
+	      		data: [-gp.axes[1], -gp.axes[0], gp.axes[5]]
+	      	  };
+	      	  sendData(data);
+	        }
+
+	        // WP vel(x, y, th)
+	        if (gp.axes[6] == 1) {
+		  data = {
+			id: 'w', 
+			data: [gp.axes[1], gp.axes[0], gp.axes[5]]
+	          };
+	      	  sendData(data);
+	        }
+
+		// ptz move
+		if (gp.axes[9] === -1) {
+			const data = 'i';
+			sendData(data);
+		}
+		if (gp.axes[9].toFixed(1) === (-1+2*2/7).toFixed(1)) {
+			const data = 'l';
+			sendData(data);
+		}
+		if (gp.axes[9].toFixed(1) === (-1+4*2/7).toFixed(1)) {
+			const data = 'k';
+			sendData(data);
+		}
+		if (gp.axes[9].toFixed(1) === (-1+6*2/7).toFixed(1)) {
+			const data = 'j';
+			sendData(data);
+		}
+		if (buttonPressed(gp.buttons[4])) {
+			const data = 'm';
+			sendData(data);
+		}
+		if (buttonPressed(gp.buttons[2])) {
+			const data = 'n';
+			sendData(data);
+		}
+
+
 	};
 
         const Debug = () => {
@@ -682,8 +691,8 @@
                 if (autoMotion == "rotate_r")
                 {
 	      		data = {
-	      			id: 'r',
-	      			data: [0.0, 0.0, 0.5] 
+	      			id: 'v',
+	      			data: [0.0, 0.0, SPEED_LEVEL/10] 
 	      	     	       };
 	      		sendData(data);
                         console.log("rotate right");
@@ -692,8 +701,8 @@
                 if (autoMotion == "rotate_l")
                 {
 	      		data = {
-	      			id: 'r',
-	      			data: [0.0, 0.0, -0.5] 
+	      			id: 'v',
+	      			data: [0.0, 0.0, -SPEED_LEVEL/10] 
 	      	     	       };
 	      		sendData(data);
                         console.log("rotate l");
@@ -733,8 +742,8 @@
 	      		else 
 	      		{
 	      			data = {
-	      				id: 'r',
-	      				data: [0.0, 0.0, -0.5] 
+	      				id: 'v',
+	      				data: [0.0, 0.0, SPEED_LEVEL/10] 
 	      	     	       	};
 	      			sendData(data);
 				count = 0;
