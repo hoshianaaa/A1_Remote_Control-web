@@ -42,7 +42,7 @@
         }
 
         </style>
-      	<div class="site-box">
+      <div class="site-box">
                 <div class="top">
                         <p>Robot ID
                         <input id="roomIdInput" type="text" value=""></input>
@@ -52,7 +52,7 @@
                         <button onclick="disconnectVoice();"class="box">voice off</button>
                         <button onclick="sendDataRebootRaspi1();"class="box">reboot 1</button>
                         <button onclick="sendDataRebootRaspi2();"class="box">reboot 2</button>
-                        　Auto
+                         Auto
                         <select id="auto-motion" onChange="onChangeAutoMotion();">
                           <option value="none">none</option>
                           <option value="rotate_r">rotate_r</option>
@@ -96,8 +96,6 @@
       <script src="./main.js"></script>
       <script type="text/javascript">
 
-
-	let MIN_INPUT = 0.2;
         let SPEED_LEVEL = 2;
         const options = Ayame.defaultOptions;
         options.clientId = clientId ? clientId : options.clientId;
@@ -320,180 +318,231 @@
 
         };
 
-       const sendData = (data) => {
+       const sendDataRebootRaspi1 = () => {
+          const data = 'q';
           console.log(data);
           console.log(dataChannel1);
           if (dataChannel1 && dataChannel1.readyState === 'open') {
-            dataChannel1.send(JSON.stringify(data));
-	    dataChannel1.send('\n');
+            dataChannel1.send(data);
           }
         };
 
-	// id
-	// 1. velocity(vx, vy, vr)
-	// 2. slam 1: open, 2: clear map, 3: save map
-	// 3. navigation 1: open, 3: set start number, 4: start navigation, 5: stop navigation
-	// 4. set initial pos 1: open, 2: velocity(vx, vy, vr)
-	// 5. waypoint editor 1: open, 2: add, 3: del, 4: select(up), 5: select(down), 6: velocity(vx, vy, vth), 7: all clear
-
-        //keyボード入力でA1を操作
+        const sendDataL = () => {
+          const data = 'a';
+          console.log(data);
+          console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataR = () => {
+          const data = 'd';
+          console.log(data);
+          console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataF = () => {
+          const data = 'w';
+          console.log(data);
+          console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataB = () => {
+          const data = 's';
+          console.log(data);
+          console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataRR = () => {
+          const data = 'c';
+          console.log(data);
+          console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataRL = () => {
+          const data = 'x';
+          console.log(data);
+          console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataFU = () => {
+          const data = 'i';
+          console.log(data);
+          console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataFD = () => {
+          const data = 'k';
+          console.log(data);
+          console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataBD = () => {
+          const data = 'n';
+          console.log(data);
+          console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataSpeed = (speed) => {
+          const data = String(speed);
+          console.log(data);
+          console.log(dataChannel1);
+          if (dataChannel1 && dataChannel1.readyState === 'open') {
+            dataChannel1.send(data);
+          }
+        };
+        const sendDataRebootRaspi2 = () => {
+          const data = 'q';
+          console.log(data);
+          console.log(dataChannel11);
+          if (dataChannel11 && dataChannel11.readyState === 'open') {
+            dataChannel11.send(data);
+          }
+        };
+        const sendDataPtzInit = () => {
+          const data = 'a';
+          console.log(data);
+          console.log(dataChannel11);
+          if (dataChannel11 && dataChannel11.readyState === 'open') {
+            dataChannel11.send(data);
+          }
+        };
+        const sendDataPtzUp = () => {
+          const data = 'i';
+          console.log(data);
+          console.log(dataChannel11);
+          if (dataChannel11 && dataChannel11.readyState === 'open') {
+            dataChannel11.send(data);
+          }
+        };
+        const sendDataPtzDown = () => {
+          const data = 'k';
+          console.log(data);
+          console.log(dataChannel11);
+          if (dataChannel11 && dataChannel11.readyState === 'open') {
+            dataChannel11.send(data);
+          }
+        };
+        const sendDataPtzLeft = () => {
+          const data = 'j';
+          console.log(data);
+          console.log(dataChannel11);
+          if (dataChannel11 && dataChannel11.readyState === 'open') {
+            dataChannel11.send(data);
+          }
+        };
+        const sendDataPtzRight = () => {
+          const data = 'l';
+          console.log(data);
+          console.log(dataChannel11);
+          if (dataChannel11 && dataChannel11.readyState === 'open') {
+            dataChannel11.send(data);
+          }
+        };
+        const sendDataPtzZoomIn = () => {
+          const data = 'm';
+          console.log(data);
+          console.log(dataChannel11);
+          if (dataChannel11 && dataChannel11.readyState === 'open') {
+            dataChannel11.send(data);
+          }
+        };
+        const sendDataPtzZoomOut = () => {
+          const data = 'n';
+          console.log(data);
+          console.log(dataChannel11);
+          if (dataChannel11 && dataChannel11.readyState === 'open') {
+            dataChannel11.send(data);
+          }
+        };
+        //key??????A1???
         window.addEventListener('keydown', function(event) {
 
                 console.log(event.keyCode);
                 //e 69  d 68  f 70  s 83  j 74  l 76
                 //0 48
-		if (event.keyCode == 71){
-			const data = {
-					id: 'test',
-					data: [5, 1.3]
-				     };
-			sendData(data);
-		}
-		// e
+
                 if (event.keyCode == 69){
-			const data = {
-					id: 'v', 
-					data: [SPEED_LEVEL/10, 0.0, 0.0]
-				     };
-                        sendData(data);
+                        sendDataF();
                         console.log("forward");
                 }
-		// s
                 if (event.keyCode == 83){
-			const data = {
-					id: 'v', 
-					data: [0.0, SPEED_LEVEL/10, 0.0]
-				     };
-                        sendData(data);
+                        sendDataL();
                         console.log("left");
                 }
-		// d
                 if (event.keyCode == 68){
-			const data = {
-					id: 'v', 
-					data: [-SPEED_LEVEL/10, 0.0, 0.0]
-				     };
-                        sendData(data);
+                        sendDataB();
                         console.log("back");
                 }
-		// f
                 if (event.keyCode == 70){
-			const data = {
-					id: 'v',
-					data: [0.0, -SPEED_LEVEL/10, 0.0]
-				     };
-                        sendData(data);
+                        sendDataR();
                         console.log("right");
                 }
-		// j
                 if (event.keyCode == 74){
-			const data = {
-					id: 'v',
-					data: [0.0, 0.0, -SPEED_LEVEL/10]
-				     };
-			sendData(data);
+                        sendDataRL();
                         console.log("rotate left");
                 }
-		// l
                 if (event.keyCode == 76){
-			const data = {
-					id: 'v',
-					data: [0.0, 0.0, SPEED_LEVEL/10]
-				     };
-                        sendData(data);
+                        sendDataRR();
                         console.log("rotate right");
                 }
-		// i
                 if (event.keyCode == 73){
-			const data = {
-					id: 'r',
-					data: [0.0, -SPEED_LEVEL/10, 0.0] 
-				     };
-                        sendData(data);
+                        sendDataFU();
                         console.log("face up");
                 }
-		// k
                 if (event.keyCode == 75){
-			const data = {
-					id: 'r',
-					data: [0.0, SPEED_LEVEL/10, 0.0] 
-				     };
-                        sendData(data);
+                        sendDataFD();
                         console.log("face down");
                 }
-		// n
                 if (event.keyCode == 78){
-			const data = {
-					id: 'r',
-					data: [0.0, 0.0, -SPEED_LEVEL/10]
-				     };
-                        sendData(data);
+                        sendDataBD();
                         console.log("body down");
                 }
 
-                //space 32 上矢印 38 下矢印 40 左矢印 37 右矢印 39
+                //space 32 ??? 38 ??? 40 ??? 37 ??? 39
 
-		// space
                 if (event.keyCode == 32){
-			const data = {
-					id: 'p', 
-					data: 'Init'
-				     };
-                        sendData(data);
+                        sendDataPtzInit();
                         console.log("ptz init");
                 }
-		// up
                 if (event.keyCode == 38){
-			const data = {
-					id: 'p', 
-					data: 'up'
-				     };
-                        sendData(data);
+                        sendDataPtzUp();
                         console.log("ptz up");
                 }
-		// down
                 if (event.keyCode == 40){
-			const data = {
-					id: 'p', 
-					data: 'down'
-				     };
-                        sendData(data);
+                        sendDataPtzDown();
                         console.log("ptz down");
                 }
-		// left
                 if (event.keyCode == 37){
-			const data = {
-					id: 'p', 
-					data: 'left'
-				     };
-                        sendData(data);
+                        sendDataPtzLeft();
                         console.log("ptz left");
                 }
-		// right
                 if (event.keyCode == 39){
-			const data = {
-					id: 'p', 
-					data: 'right'
-				     };
-                        sendData(data);
+                        sendDataPtzRight();
                         console.log("ptz right");
                 }
-		// PgUp or z 
                 if (event.keyCode == 33 || event.keyCode == 90){
-			const data = {
-					id: 'p', 
-					data: 'zoomin'
-				     };
-                        sendData(data);
+                        sendDataPtzZoomIn();
                         console.log("ptz zoom in");
                 }
-		// PgDn or x
                 if (event.keyCode == 34 || event.keyCode == 88){
-			const data = {
-					id: 'p', 
-					data: 'zoomout'
-				     };
-                        sendData(data);
+                        sendDataPtzZoomOut();
                         console.log("ptz zoom out");
                 }
 
@@ -502,11 +551,7 @@
                 //0: 48 1:49 ... 9:57
                 //0: 48 1:49 ... 5:53
                 if (event.keyCode > 47 && event.keyCode < 54){
-			const data = {
-					id: 's',
-					data: [event.keyCode - 48]
-				     };
-			sendData(data);
+                        sendDataSpeed(event.keyCode);
                         SPEED_LEVEL = event.keyCode - 48;
                         console.log("change speed");
                         console.log("Speed Level:",event.keyCode - 48)
@@ -519,7 +564,7 @@
 
 	  console.log("Gamepad connected at index " + gp.index + ": " + gp.id + ". It has " + gp.buttons.length + " buttons and " + gp.axes.length + " axes.");
 
-	  gameLoop();
+	  //gameLoop();
 	});
 
 	window.addEventListener("gamepaddisconnected", function() {
@@ -539,95 +584,18 @@
 	  	var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
 	        var gp = gamepads[0];
 	        if (!gp) return;
-	      
-		for(var i=0; i<gp.buttons.length; ++i){
-	      	  //console.log("  " + i + ": " + buttonPressed(gp.buttons[i]));
-		}
+	      /*
+	      	console.log("game pad val");
+	      	console.log(" - buttons");
+	      	console.log("0:" + buttonPressed(gp.buttons[0]));
+	      	console.log("2:" + buttonPressed(gp.buttons[2]));
 
-	        // trig: add waypoint
-	        if (buttonPressed(gp.buttons[0])) {
-	      		const data = {
-					id: 'p',
-	      				data: 'add'
-	      			     };
-	      		sendData(data);
-	      	}
-	        // key 4: clear waypoint
-	        if (buttonPressed(gp.buttons[3])) {
-	      		const data = {
-					id: 'p',
-	      				data: 'clear'
-	      			     };
-	      		sendData(data);
-	      	}
-		// key 11: start nav
-		if (buttonPressed(gp.buttons[10])) {
-			const data = {
-					id: 'n',
-					data: 'start'
-			};
-	      		sendData(data);
-		}
-		// key 12: stop nav
-		if (buttonPressed(gp.buttons[11])) {
-			const data = {
-					id: 'n',
-					data: 'stop'
-			};
-	      		sendData(data);
-		}
-
-
-		for (var i=0; i<gp.axes.length; ++i) {
-	      	  //console.log("  " + i + ": " + gp.axes[i]);
-		}
-
-
-	        // A1 vel(x, y, th)
-	        if (gp.axes[6] == -1) {
-	      	  data = {
-	      		id: 'v',
-	      		data: [-gp.axes[1], -gp.axes[0], gp.axes[5]]
-	      	  };
-	      	  sendData(data);
-	        }
-
-	        // WP vel(x, y, th)
-	        if (gp.axes[6] == 1) {
-		  data = {
-			id: 'w', 
-			data: [gp.axes[1], gp.axes[0], gp.axes[5]]
-	          };
-	      	  sendData(data);
-	        }
-
-		// ptz move
-		if (gp.axes[9] === -1) {
-			const data = 'i';
-			sendData(data);
-		}
-		if (gp.axes[9].toFixed(1) === (-1+2*2/7).toFixed(1)) {
-			const data = 'l';
-			sendData(data);
-		}
-		if (gp.axes[9].toFixed(1) === (-1+4*2/7).toFixed(1)) {
-			const data = 'k';
-			sendData(data);
-		}
-		if (gp.axes[9].toFixed(1) === (-1+6*2/7).toFixed(1)) {
-			const data = 'j';
-			sendData(data);
-		}
-		if (buttonPressed(gp.buttons[4])) {
-			const data = 'm';
-			sendData(data);
-		}
-		if (buttonPressed(gp.buttons[2])) {
-			const data = 'n';
-			sendData(data);
-		}
-
-
+	      	console.log(" - axes");
+	      	console.log("0:" + gp.axes[0]);
+	      	console.log("1:" + gp.axes[1]);
+	      	console.log("2:" + gp.axes[2]);
+	      	console.log("3:" + gp.axes[3]);
+	      */
 	};
 
         const Debug = () => {
@@ -692,21 +660,13 @@
 
                 if (autoMotion == "rotate_r")
                 {
-	      		data = {
-	      			id: 'v',
-	      			data: [0.0, 0.0, SPEED_LEVEL/10] 
-	      	     	       };
-	      		sendData(data);
+                        sendDataRR();
                         console.log("rotate right");
                 }
 
                 if (autoMotion == "rotate_l")
                 {
-	      		data = {
-	      			id: 'v',
-	      			data: [0.0, 0.0, -SPEED_LEVEL/10] 
-	      	     	       };
-	      		sendData(data);
+                        sendDataRL();
                         console.log("rotate l");
                 }
 
@@ -723,31 +683,19 @@
 	      		{
 				if (face_up == 0)
 				{
-	      				data = {
-	      					id: 'r',
-	      					data: [0.0, -0.5, 0.0] 
-	      	     	       		};
-	      				sendData(data);
+					sendDataFU();
 					face_up = 1;
 				}
 				else
 				{
-	      				data = {
-	      					id: 'r',
-	      					data: [0.0, 0.5, 0.0] 
-	      	     	       		};
-	      				sendData(data);
+					sendDataBD();
 					face_up = 0;
 				}
 				count = count + 1;
 	      		}
 	      		else 
 	      		{
-	      			data = {
-	      				id: 'v',
-	      				data: [0.0, 0.0, SPEED_LEVEL/10] 
-	      	     	       	};
-	      			sendData(data);
+				sendDataRR();
 				count = 0;
 	      		}
 		}
