@@ -97,7 +97,7 @@
       <script type="text/javascript">
 
 
-	let MIN_INPUT = 0.2;
+	let MIN_INPUT = 0.1;
         let SPEED_LEVEL = 2;
         const options = Ayame.defaultOptions;
         options.clientId = clientId ? clientId : options.clientId;
@@ -311,8 +311,8 @@
 
 	url = '../ptz_camera.html?roomId=' + roomId + '-10';
 	url2 = '../map_camera.html?roomId=' + roomId + '-12';
-	console.log(url)
-	console.log(url2)
+	console.log(url);
+	console.log(url2);
 	var Win1 = window.open(url, 'subWindow', 'width=' + 600 + ',height=' + 400 + '');
 	var Win2 = window.open(url2, 'subWindow2', 'width=' + 600 + ',height=' + 400 + '');
 
@@ -501,59 +501,138 @@
                 //speed change
                 //0: 48 1:49 ... 9:57
                 //0: 48 1:49 ... 5:53
+
                 if (event.keyCode > 47 && event.keyCode < 54){
 			const data = {
 					id: 's',
 					data: [event.keyCode - 48]
 				     };
 			sendData(data);
+
                         SPEED_LEVEL = event.keyCode - 48;
                         console.log("change speed");
-                        console.log("Speed Level:",event.keyCode - 48)
+                        console.log("Speed Level:",event.keyCode - 48);
                 }
         });
 
+	var gamepadAPI = {
+	      controller: {}, 
+	      turbo: false,
+	      connect: function() {}, 
+	      disconnect: function() {},
+	      update: function() {}, 
+	      buttonPressed: function() {},
+	      buttons: [],
+	      buttonsCache: [], 
+	      buttonsStatus: [], 
+	      axesStatus: []
+	};
+	
+	gamepadAPI.buttons = [
+	      'trig', 'b2', 'b3', 'b4', 'b5', 'b6', 
+	      'b7', 'b8', 'b9', 'b10', 'b11', 'b12'
+	]; 
 
-	window.addEventListener("gamepadconnected", function() {
-	  var gp = navigator.getGamepads()[0];
+	gamepadAPI.connect = () => {
+	  gamepadAPI.controller = navigator.getGamepads()[0];	
+	  gamepadAPI.turbo = true;
+	  console.log("Gamepad connected at index " + 
+		      gamepadAPI.controller.index + ": " + 
+		      gamepadAPI.controller.id + ". It has " + 
+		      gamepadAPI.controller.buttons.length + " buttons and " + 
+		      gamepadAPI.controller.axes.length + " axes.");
+	};
 
-	  console.log("Gamepad connected at index " + gp.index + ": " + gp.id + ". It has " + gp.buttons.length + " buttons and " + gp.axes.length + " axes.");
+	
+	gamepadAPI.disconnect = () => {
+	  gamepadAPI.turbo = false;
+	  delete gamepadAPI.controller;
+	  console.log("Gamepad disconnected.");
+	};
+	
+	window.addEventListener("gamepadconnected", gamepadAPI.connect);
 
-	  gameLoop();
-	});
+	window.addEventListener("gamepaddisconnected", gamepadAPI.disconnect);
 
-	window.addEventListener("gamepaddisconnected", function() {
-		console.log("disconnect gamepad");
-	});
+	gamepadAPI.update = () => {
 
-	var interval = setInterval(gameLoop, 100);
+	        gamepadAPI.buttonsCache = [];
+		
+	        // save previous status
+	        for(var k=0; k<gamepadAPI.buttonsStatus.length; ++k) {
+	          gamepadAPI.buttonsCache[k] = gamepadAPI.buttonsStatus[k];
+	        }
 
-	function buttonPressed(b) {
-		if (typeof(b) == "object") {
-			return b.pressed;
-		}
-		return b == 1.0;
-	}
+	        gamepadAPI.buttonsStatus = [];
 
-	function gameLoop() {
-	  	var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
-	        var gp = gamepads[0];
+	      	var pads = navigator.getGamepads ? navigator.getGamepads() :
+	      			(navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+	        var gp = pads[0];
 	        if (!gp) return;
-	      
-		for(var i=0; i<gp.buttons.length; ++i){
-	      	  //console.log("  " + i + ": " + buttonPressed(gp.buttons[i]));
-		}
+
+	        var pressed = [];
+		
+	        if(gp.buttons) {
+	          for(var i=0; i<gp.buttons.length; ++i){
+	            if(gp.buttons[i].pressed) {
+	              pressed.push(gamepadAPI.buttons[i]);
+		    }
+	          }
+	        }
+	        
+	        var axes = [];
+	        if(gp.axes) {
+	          for(var i=0; i<gp.axes.length; ++i){
+			axes.push(gp.axes[i].toFixed(1));
+	          }
+	        }
+	        
+	        gamepadAPI.axesStatus = axes;
+	        gamepadAPI.buttonsStatus = pressed;
+
+	        return pressed;
+	};
+
+	gamepadAPI.buttonPressed = (button, hold) => {
+	    var newPress = false;
+	    
+	    for(var i=0; i<gamepadAPI.buttonsStatus.length; ++i) {
+	        if(gamepadAPI.buttonsStatus[i] == button) {
+	      	  newPress = true;
+	          if(!hold) {
+	            for(var j=0; j<gamepadAPI.buttonsCache.length; ++j) {
+	              if (gamepadAPI.buttonsCache[j] == button) {
+	                newPress = false;
+	      	      }
+	      	    }
+	          }
+	        }
+	      }
+	    return newPress;
+	};
+	
+	setInterval(function(){
+	  gamepadAPI.update();
+	  if(gamepadAPI.turbo) {
 
 	        // trig: add waypoint
-	        if (buttonPressed(gp.buttons[0])) {
+	        if (gamepadAPI.buttonPressed('trig')) {
 	      		const data = {
 					id: 'p',
 	      				data: 'add'
 	      			     };
 	      		sendData(data);
 	      	}
+		// key 2: reset waypoint
+		if (gamepadAPI.buttonPressed('b2')) {
+			const data = {
+					id: 'p', 
+					data: 'reset'
+				     };
+			sendData(data);
+		}
 	        // key 4: clear waypoint
-	        if (buttonPressed(gp.buttons[3])) {
+	        if (gamepadAPI.buttonPressed('b4')) {
 	      		const data = {
 					id: 'p',
 	      				data: 'clear'
@@ -561,7 +640,7 @@
 	      		sendData(data);
 	      	}
 		// key 11: start nav
-		if (buttonPressed(gp.buttons[10])) {
+		if (gamepadAPI.buttonPressed('b11')) {
 			const data = {
 					id: 'n',
 					data: 'start'
@@ -569,7 +648,7 @@
 	      		sendData(data);
 		}
 		// key 12: stop nav
-		if (buttonPressed(gp.buttons[11])) {
+		if (gamepadAPI.buttonPressed('b12')) {
 			const data = {
 					id: 'n',
 					data: 'stop'
@@ -577,58 +656,59 @@
 	      		sendData(data);
 		}
 
-
-		for (var i=0; i<gp.axes.length; ++i) {
-	      	  //console.log("  " + i + ": " + gp.axes[i]);
-		}
-
-
 	        // A1 vel(x, y, th)
-	        if (gp.axes[6] == -1) {
-	      	  data = {
-	      		id: 'v',
-	      		data: [-gp.axes[1], -gp.axes[0], gp.axes[5]]
-	      	  };
-	      	  sendData(data);
+	        if (gamepadAPI.axesStatus[6] == -1) {
+	          if (Math.abs(gamepadAPI.axesStatus[0]) > MIN_INPUT || 
+		      Math.abs(gamepadAPI.axesStatus[1]) > MIN_INPUT ||
+		      Math.abs(gamepadAPI.axesStatus[5]) > MIN_INPUT) { 
+	      	  	data = {
+	      			id: 'v',
+	      			data: [-gamepadAPI.axesStatus[1], -gamepadAPI.axesStatus[0], gamepadAPI.axesStatus[5]]
+	      	  	};
+	      	  	sendData(data);
+		  }
 	        }
 
 	        // WP vel(x, y, th)
-	        if (gp.axes[6] == 1) {
-		  data = {
-			id: 'w', 
-			data: [gp.axes[1], gp.axes[0], gp.axes[5]]
-	          };
-	      	  sendData(data);
+	        if (gamepadAPI.axesStatus[6] == 1) {
+		  if (Math.abs(gamepadAPI.axesStatus[0]) > MIN_INPUT ||
+		      Math.abs(gamepadAPI.axesStatus[1]) > MIN_INPUT ||
+		      Math.abs(gamepadAPI.axesStatus[5]) > MIN_INPUT) {
+			data = {
+				id: 'w', 
+				data: [gamepadAPI.axesStatus[1], gamepadAPI.axesStatus[0], gamepadAPI.axesStatus[5]]
+	          	};
+	      	  	sendData(data);
+		  }
 	        }
 
 		// ptz move
-		if (gp.axes[9] === -1) {
+		if (gamepadAPI.axesStatus[9] == -1) {
 			const data = 'i';
 			sendData(data);
 		}
-		if (gp.axes[9].toFixed(1) === (-1+2*2/7).toFixed(1)) {
+		if (gamepadAPI.axesStatus[9] === (-1+2*2/7).toFixed(1)) {
 			const data = 'l';
 			sendData(data);
 		}
-		if (gp.axes[9].toFixed(1) === (-1+4*2/7).toFixed(1)) {
+		if (gamepadAPI.axesStatus[9] === (-1+4*2/7).toFixed(1)) {
 			const data = 'k';
 			sendData(data);
 		}
-		if (gp.axes[9].toFixed(1) === (-1+6*2/7).toFixed(1)) {
+		if (gamepadAPI.axesStatus[9] === (-1+6*2/7).toFixed(1)) {
 			const data = 'j';
 			sendData(data);
 		}
-		if (buttonPressed(gp.buttons[4])) {
+		if (gamepadAPI.buttonPressed('b5')) {
 			const data = 'm';
 			sendData(data);
 		}
-		if (buttonPressed(gp.buttons[2])) {
+		if (gamepadAPI.buttonPressed('b3')) {
 			const data = 'n';
 			sendData(data);
 		}
-
-
-	};
+	  }}, 100);
+          
 
         const Debug = () => {
           console.log("*** debug ***");
