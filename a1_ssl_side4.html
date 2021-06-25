@@ -96,8 +96,35 @@
       <script src="./main.js"></script>
       <script type="text/javascript">
 
+	//if x > x1 y = ax + b
+	//if x < -x1 y = ax - b
+	//if x >= -x1 && x <= x1 y = 0
 
-	let MIN_INPUT = 0.1;
+	class Remapper {
+	      constructor (x1, x2, y1, y2) {
+	      	this.a = (y2 - y1) / (x2 - x1);
+	        this.b = y2 - this.a * x2;
+		this.x1 = x1;
+	      }
+	      
+	      remap(val) {
+		var y;
+		console.log("x1:",this.x1);
+		if (val > this.x1) y = this.a * val + this.b; 
+		else if (val < - this.x1) y = this.a * val - this.b;
+		else y = 0;
+		console.log("vel:",y);
+	      	return y;
+	      }
+	}
+
+	let MIN_INPUT = 0.2;
+	let MAX_INPUT = 1.0;
+	let MAX_Speed = 0.5;
+	let MIN_Speed = 0.0;
+
+	var pad2vel = new Remapper(MIN_INPUT,MAX_INPUT,MIN_Speed,MAX_Speed);
+
         let SPEED_LEVEL = 2;
         const options = Ayame.defaultOptions;
         options.clientId = clientId ? clientId : options.clientId;
@@ -515,6 +542,13 @@
                 }
         });
 
+        function onChangeAutoMotion() {
+          autoMotion = document.getElementById("auto-motion").value;
+          if (autoMotion == 'none') {
+            autoMotion = null;
+          }
+        }
+
 	var gamepadAPI = {
 	      controller: {}, 
 	      turbo: false,
@@ -610,6 +644,7 @@
 	      }
 	    return newPress;
 	};
+
 	
 	setInterval(function(){
 	  gamepadAPI.update();
@@ -663,8 +698,9 @@
 		      Math.abs(gamepadAPI.axesStatus[5]) > MIN_INPUT) { 
 	      	  	data = {
 	      			id: 'v',
-	      			data: [-gamepadAPI.axesStatus[1], -gamepadAPI.axesStatus[0], gamepadAPI.axesStatus[5]]
+	      			data: [pad2vel.remap(-gamepadAPI.axesStatus[1]), pad2vel.remap(-gamepadAPI.axesStatus[0]), pad2vel.remap(gamepadAPI.axesStatus[5])]
 	      	  	};
+
 	      	  	sendData(data);
 		  }
 	        }
@@ -676,7 +712,7 @@
 		      Math.abs(gamepadAPI.axesStatus[5]) > MIN_INPUT) {
 			data = {
 				id: 'w', 
-				data: [gamepadAPI.axesStatus[1], gamepadAPI.axesStatus[0], gamepadAPI.axesStatus[5]]
+				data: [pad2vel.remap(-gamepadAPI.axesStatus[1]), pad2vel.remap(gamepadAPI.axesStatus[0]), pad2vel.remap(gamepadAPI.axesStatus[5])]
 	          	};
 	      	  	sendData(data);
 		  }
