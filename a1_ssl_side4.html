@@ -712,7 +712,7 @@
 		      Math.abs(gamepadAPI.axesStatus[5]) > MIN_INPUT) {
 			data = {
 				id: 'w', 
-				data: [pad2vel.remap(-gamepadAPI.axesStatus[1]), pad2vel.remap(gamepadAPI.axesStatus[0]), pad2vel.remap(gamepadAPI.axesStatus[5])]
+				data: [pad2vel.remap(gamepadAPI.axesStatus[1]), pad2vel.remap(gamepadAPI.axesStatus[0]), pad2vel.remap(gamepadAPI.axesStatus[5])]
 	          	};
 	      	  	sendData(data);
 		  }
