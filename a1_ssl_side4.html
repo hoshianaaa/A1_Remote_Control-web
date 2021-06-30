@@ -720,27 +720,45 @@
 
 		// ptz move
 		if (gamepadAPI.axesStatus[9] == -1) {
-			const data = 'i';
+			data = {
+				id: 'ptz', 
+				data: 'up'
+	          	};
 			sendData(data);
 		}
 		if (gamepadAPI.axesStatus[9] === (-1+2*2/7).toFixed(1)) {
-			const data = 'l';
+			data = {
+				id: 'ptz', 
+				data: 'down'
+	          	};
 			sendData(data);
 		}
 		if (gamepadAPI.axesStatus[9] === (-1+4*2/7).toFixed(1)) {
-			const data = 'k';
+			data = {
+				id: 'ptz', 
+				data: 'left'
+	          	};
 			sendData(data);
 		}
 		if (gamepadAPI.axesStatus[9] === (-1+6*2/7).toFixed(1)) {
-			const data = 'j';
+			data = {
+				id: 'ptz', 
+				data: 'right'
+	          	};
 			sendData(data);
 		}
 		if (gamepadAPI.buttonPressed('b5')) {
-			const data = 'm';
+			data = {
+				id: 'ptz', 
+				data: 'zoomup'
+	          	};
 			sendData(data);
 		}
 		if (gamepadAPI.buttonPressed('b3')) {
-			const data = 'n';
+			data = {
+				id: 'ptz', 
+				data: 'zoomdown'
+	          	};
 			sendData(data);
 		}
 	  }}, 100);
