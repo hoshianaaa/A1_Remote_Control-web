@@ -666,14 +666,32 @@
 				     };
 			sendData(data);
 		}
-	        // key 4: clear waypoint
-	        if (gamepadAPI.buttonPressed('b4')) {
+
+		// key 5: delete waypoint
+		if (gamepadAPI.buttonPressed('b5')) {
+			data = {
+				id: 'p', 
+				data: 'del'
+	          	};
+			sendData(data);
+		}
+
+		if (gamepadAPI.buttonPressed('b4')) {
+			data = {
+				id: 'p', 
+				data: 'target_up'
+	          	};
+			sendData(data);
+		}
+
+	        if (gamepadAPI.buttonPressed('b3')) {
 	      		const data = {
 					id: 'p',
-	      				data: 'clear'
+	      				data: 'target_down'
 	      			     };
 	      		sendData(data);
 	      	}
+
 		// key 11: start nav
 		if (gamepadAPI.buttonPressed('b11')) {
 			const data = {
@@ -747,20 +765,7 @@
 	          	};
 			sendData(data);
 		}
-		if (gamepadAPI.buttonPressed('b5')) {
-			data = {
-				id: 'ptz', 
-				data: 'zoomup'
-	          	};
-			sendData(data);
-		}
-		if (gamepadAPI.buttonPressed('b3')) {
-			data = {
-				id: 'ptz', 
-				data: 'zoomdown'
-	          	};
-			sendData(data);
-		}
+
 	  }}, 100);
           
 
