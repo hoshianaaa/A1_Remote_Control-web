@@ -676,6 +676,17 @@
 			sendData(data);
 		}
 
+		// key 6: clear waypoint
+		if (gamepadAPI.buttonPressed('b6')) {
+			data = {
+				id: 'p', 
+				data: 'clear'
+	          	};
+			sendData(data);
+		}
+
+
+
 		if (gamepadAPI.buttonPressed('b4')) {
 			data = {
 				id: 'p', 
@@ -691,6 +702,16 @@
 	      			     };
 	      		sendData(data);
 	      	}
+
+
+		// key 9: start loop nav
+		if (gamepadAPI.buttonPressed('b9')) {
+			const data = {
+					id: 'n',
+					data: 'start_loop'
+			};
+	      		sendData(data);
+		}
 
 		// key 11: start nav
 		if (gamepadAPI.buttonPressed('b11')) {
