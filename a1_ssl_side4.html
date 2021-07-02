@@ -123,6 +123,8 @@
 	let MAX_Speed = 0.5;
 	let MIN_Speed = 0.0;
 
+	last_axis_status_6 = -1;	
+
 	var pad2vel = new Remapper(MIN_INPUT,MAX_INPUT,MIN_Speed,MAX_Speed);
 
         let SPEED_LEVEL = 2;
@@ -730,6 +732,50 @@
 	      		sendData(data);
 		}
 
+		// key 7: camera down 
+		if (gamepadAPI.buttonPressed('b7')) {
+			const data = {
+					id: 'cam',
+					data: 'down'
+			};
+	      		sendData(data);
+		}
+
+		// key 8: camera up 
+		if (gamepadAPI.buttonPressed('b8')) {
+			const data = {
+					id: 'cam',
+					data: 'up'
+			};
+	      		sendData(data);
+		}
+
+
+	        if ( gamepadAPI.axesStatus[6] != last_axis_status_6) {
+	      		if (  gamepadAPI.axesStatus[6] == -1) 
+			      {
+					const data = {
+							id: 'cam',
+							data: 'robot'
+					};
+					sendData(data);
+
+			      }
+	      		if (  gamepadAPI.axesStatus[6] == 1) 
+
+			 	{
+					const data = {
+							id: 'cam',
+							data: 'wp'
+					};
+					sendData(data);
+
+			      	}
+
+	        }
+
+
+
 	        // A1 vel(x, y, th)
 	        if (gamepadAPI.axesStatus[6] == -1) {
 	          if (Math.abs(gamepadAPI.axesStatus[0]) > MIN_INPUT || 
@@ -741,6 +787,7 @@
 	      	  	};
 
 	      	  	sendData(data);
+			last_axis_status_6 = -1;
 		  }
 	        }
 
@@ -754,6 +801,7 @@
 				data: [pad2vel.remap(gamepadAPI.axesStatus[1]), pad2vel.remap(gamepadAPI.axesStatus[0]), pad2vel.remap(gamepadAPI.axesStatus[5])]
 	          	};
 	      	  	sendData(data);
+			last_axis_status_6 = 1;
 		  }
 	        }
 
