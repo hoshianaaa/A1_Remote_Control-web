@@ -769,6 +769,7 @@
 							data: 'robot'
 					};
 					sendData(data);
+					last_axis_status_6 = -1;
 
 			      }
 	      		if (  gamepadAPI.axesStatus[6] == 1) 
@@ -779,6 +780,7 @@
 							data: 'wp'
 					};
 					sendData(data);
+					last_axis_status_6 = 1;
 
 			      	}
 
@@ -797,7 +799,6 @@
 	      	  	};
 
 	      	  	sendData(data);
-			last_axis_status_6 = -1;
 		  }
 	        }
 
@@ -811,7 +812,6 @@
 				data: [pad2vel.remap(gamepadAPI.axesStatus[1]), pad2vel.remap(gamepadAPI.axesStatus[0]), pad2vel.remap(gamepadAPI.axesStatus[5])]
 	          	};
 	      	  	sendData(data);
-			last_axis_status_6 = 1;
 		  }
 	        }
 
