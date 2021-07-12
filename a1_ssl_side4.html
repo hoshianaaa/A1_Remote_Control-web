@@ -750,6 +750,16 @@
 	      		sendData(data);
 		}
 
+		// key 10: swtich init pos setting mode 
+		if (gamepadAPI.buttonPressed('b10')) {
+			const data = {
+					id: 'init_pos',
+					data: 'init_pos'
+			};
+	      		sendData(data);
+		}
+
+
 
 	        if ( gamepadAPI.axesStatus[6] != last_axis_status_6) {
 	      		if (  gamepadAPI.axesStatus[6] == -1) 
