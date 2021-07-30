@@ -173,13 +173,41 @@
           conn11 = Ayame.connection(signalingUrl, roomId+"-11", options, true); // ptz_controll
 
           //A1
+
+		/*
+          conn11.on('open', async (e) => {
+            console.log(dataChannel11);
+            dataChannel11 = await conn11.createDataChannel(label);
+            if (dataChannel11) {
+              dataChannel11.onmessage = onMessage11;
+            }
+          });
+          conn11.on('datachannel', (channel) => {
+            if (!dataChannel11) {
+              dataChannel11 = channel;
+              dataChannel11.onmessage = onMessage11;
+            }
+          });
+          conn11.on('disconnect', (e) => console.log(e));
+          await conn11.connect(null);
+          await delay(1000);
+	  */
+
+
+
+
+
           conn1.on('open', async (e) => {
             console.log(dataChannel1);
             dataChannel1 = await conn1.createDataChannel(label);
+	    if (dataChannel1) {
+		dataChannel1.onmessage = onMessage1;
+	    }
           });
           conn1.on('datachannel', (channel) => {
             if (!dataChannel1) {
               dataChannel1 = channel;
+              dataChannel1.onmessage = onMessage1;
             }
           });
           conn1.on('disconnect', (e) => console.log(e));
@@ -615,6 +643,8 @@
         var s2_val = null;
         var tmp_val = null;
         var ptz_val = null;
+        var network1 = null;
+        var network2 = null;
 
         let autoMotion = null;
 
@@ -658,6 +688,9 @@
 
                 L10 = "ptz val:" + ptz_val + "\n";
 
+                L11 = "***netword1***"+ "\n"+ network1 + "\n\n";
+                L12 = "***netword2***"+ "\n"+ network2 + "\n\n";
+
                 if (autoMotion == "rotate_r")
                 {
                         sendDataRR();
@@ -670,7 +703,7 @@
                         console.log("rotate l");
                 }
 
-                document.querySelector("#messages").value = L0 + Lv + L1 + PTZ + SP + L2 + L3 + L4 + L5 + L6 + L7 + L8 + L9 + L10;
+                document.querySelector("#messages").value = L0 + Lv + L1 + PTZ + SP + L2 + L3 + L4 + L5 + L6 + L7 + L8 + L9 + L10 + L11 + L12;
         }
 
 	let face_up = 0;
@@ -725,8 +758,14 @@
 
         function onMessage11(e) {
                 const moji = String.fromCharCode.apply(null, new Uint8Array(e.data))
-                //ptz_val = Number(moji);
-                ptz_val = moji;
+                network2 = moji;
+        }
+
+        function onMessage1(e) {
+	        console.log("onmessage1:",e.data)
+                const moji = String.fromCharCode.apply(null, new Uint8Array(e.data))
+	        console.log("moji:",e.data)
+                network1 = moji;
         }
 
         function onChangeAutoMotion() {
