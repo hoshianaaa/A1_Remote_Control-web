@@ -52,6 +52,8 @@
                         <button onclick="disconnectVoice();"class="box">voice off</button>
                         <button onclick="sendDataRebootRaspi1();"class="box">reboot 1</button>
                         <button onclick="sendDataRebootRaspi2();"class="box">reboot 2</button>
+                        <button onclick="sendDataSafetyOn();"class="box">safety on</button>
+                        <button onclick="sendDataSafetyOff();"class="box">safety off</button>
                         　Auto
                         <select id="auto-motion" onChange="onChangeAutoMotion();">
                           <option value="none">none</option>
@@ -358,6 +360,22 @@
           }
         };
 
+       function sendDataSafetyOn () {
+		data = {
+			id: 'safety', 
+			data: 'on'
+		};
+		sendData(data);
+       };
+
+       function sendDataSafetyOff() {
+		data = {
+			id: 'safety', 
+			data: 'off'
+		};
+		sendData(data);
+       };
+
 	// id
 	// 1. velocity(vx, vy, vr)
 	// 2. slam 1: open, 2: clear map, 3: save map
@@ -578,7 +596,6 @@
 		      gamepadAPI.controller.buttons.length + " buttons and " + 
 		      gamepadAPI.controller.axes.length + " axes.");
 	};
-
 	
 	gamepadAPI.disconnect = () => {
 	  gamepadAPI.turbo = false;
