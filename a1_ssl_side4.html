@@ -54,6 +54,8 @@
                         <button onclick="sendDataRebootRaspi2();"class="box">reboot 2</button>
                         <button onclick="sendDataSafetyOn();"class="box">safety on</button>
                         <button onclick="sendDataSafetyOff();"class="box">safety off</button>
+                        <button onclick="sendDataModeAmcl();"class="box">mode amcl</button>
+                        <button onclick="sendDataModeSlam();"class="box">mode slam</button>
                         　Auto
                         <select id="auto-motion" onChange="onChangeAutoMotion();">
                           <option value="none">none</option>
@@ -375,6 +377,23 @@
 		};
 		sendData(data);
        };
+
+       function sendDataModeAmcl () {
+		data = {
+			id: 'mode', 
+			data: 'amcl'
+		};
+		sendData(data);
+       };
+
+       function sendDataModeSlam () {
+		data = {
+			id: 'mode', 
+			data: 'slam'
+		};
+		sendData(data);
+       };
+
 
 	// id
 	// 1. velocity(vx, vy, vr)
