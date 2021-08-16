@@ -211,10 +211,12 @@
           conn1.on('open', async (e) => {
             console.log(dataChannel1);
             dataChannel1 = await conn1.createDataChannel(label);
+	    dataChannel1.onmessage = onMessage1;
           });
           conn1.on('datachannel', (channel) => {
             if (!dataChannel1) {
               dataChannel1 = channel;
+              dataChannel1.onmessage = onMessage1;
             }
           });
           conn1.on('disconnect', (e) => console.log(e));
@@ -900,6 +902,7 @@
         var s2_val = null;
         var tmp_val = null;
         var ptz_val = null;
+	var A1_Status = null;
 
         let autoMotion = null;
 
@@ -943,6 +946,9 @@
 
                 L10 = "ptz val:" + ptz_val + "\n";
 
+		L11 = "\n*** A1 Status ***\n";
+		L12 = A1_Status + "\n";
+
                 if (autoMotion == "rotate_r")
                 {
 	      		data = {
@@ -963,7 +969,7 @@
                         console.log("rotate l");
                 }
 
-                document.querySelector("#messages").value = L0 + Lv + L1 + PTZ + SP + L2 + L3 + L4 + L5 + L6 + L7 + L8 + L9 + L10;
+                document.querySelector("#messages").value = L0 + Lv + L1 + PTZ + SP + L2 + L3 + L4 + L5 + L6 + L7 + L8 + L9 + L10 + L11 + L12;
         }
 
 	let face_up = 0;
@@ -1032,6 +1038,13 @@
                 const moji = String.fromCharCode.apply(null, new Uint8Array(e.data))
                 //ptz_val = Number(moji);
                 ptz_val = moji;
+        }
+
+        function onMessage1(e) {
+	        console.log("onmessage1:",e.data)
+                const moji = String.fromCharCode.apply(null, new Uint8Array(e.data))
+	        console.log("moji:",e.data)
+                A1_Status = moji;
         }
 
         function onChangeAutoMotion() {
