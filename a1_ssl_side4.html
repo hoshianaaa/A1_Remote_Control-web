@@ -56,6 +56,7 @@
                         <button onclick="sendDataSafetyOff();"class="box">safety off</button>
                         <button onclick="sendDataModeAmcl();"class="box">mode amcl</button>
                         <button onclick="sendDataModeSlam();"class="box">mode slam</button>
+                        <button onclick="sendDataSlamSaveMap();"class="box">save map</button>
                         　Auto
                         <select id="auto-motion" onChange="onChangeAutoMotion();">
                           <option value="none">none</option>
@@ -177,21 +178,8 @@
           if (conn3) {
             conn1.disconnect();
           }
-          if (conn4) {
-            conn4.disconnect();
-          }
-          if (conn5) {
-            conn5.disconnect();
-          }
-          if (conn6) {
-            conn6.disconnect();
-          }
         }
         let dataChannel1 = null; // A1
-        let dataChannel2 = null; // sensor1
-        let dataChannel3 = null; // sensor2
-        let dataChannel4 = null; // temp sensor
-        let dataChannel11 = null; // ptz val
 
         const label = 'dataChannel';
         const startConn = async () => {
@@ -199,13 +187,8 @@
           conn1 = Ayame.connection(signalingUrl, roomId+"-1", options, true); // A1_controll
           conn2 = Ayame.connection(signalingUrl, roomId+"-2", options, true); // main_monitor
           conn3 = Ayame.connection(signalingUrl, roomId+"-3", options, true); // _monitor
-          conn4 = Ayame.connection(signalingUrl, roomId+"-4", options, true); // sensor1
-          conn5 = Ayame.connection(signalingUrl, roomId+"-5", options, true); // sensor2
-          conn6 = Ayame.connection(signalingUrl, roomId+"-6", options, true); // temp sensor
           conn8 = Ayame.connection(signalingUrl, roomId+"-8", options, true); // right_monitor
           conn9 = Ayame.connection(signalingUrl, roomId+"-9", options, true); // left_monitor
-          //conn10 = Ayame.connection(signalingUrl, roomId+"-10", options, true); // ptz_monitor
-          conn11 = Ayame.connection(signalingUrl, roomId+"-11", options, true); // ptz_controll
 
           //A1
           conn1.on('open', async (e) => {
@@ -272,75 +255,6 @@
           //await conn10.connect(null);
           //await delay(1000);
 
-          //ptz_control
-          conn11.on('open', async (e) => {
-            console.log(dataChannel11);
-            dataChannel11 = await conn11.createDataChannel(label);
-            if (dataChannel11) {
-              dataChannel11.onmessage = onMessage11;
-            }
-          });
-          conn11.on('datachannel', (channel) => {
-            if (!dataChannel11) {
-              dataChannel11 = channel;
-              dataChannel11.onmessage = onMessage11;
-            }
-          });
-          conn11.on('disconnect', (e) => console.log(e));
-          await conn11.connect(null);
-          await delay(1000);
-
-
-          //sensor1
-          conn4.on('open', async (e) => {
-            console.log(dataChannel2);
-            dataChannel2 = await conn4.createDataChannel(label);
-            if (dataChannel2) {
-              dataChannel2.onmessage = onMessage2;
-            }
-          });
-          conn4.on('datachannel', (channel) => {
-            if (!dataChannel2) {
-              dataChannel2 = channel;
-              dataChannel2.onmessage = onMessage2;
-            }
-          });
-          conn4.on('disconnect', (e) => console.log(e));
-          await conn4.connect(null);
-
-          //sensor2
-          conn5.on('open', async (e) => {
-            console.log(dataChannel3);
-            dataChannel3 = await conn5.createDataChannel(label);
-            if (dataChannel3) {
-              dataChannel3.onmessage = onMessage3;
-            }
-          });
-          conn5.on('datachannel', (channel) => {
-            if (!dataChannel3) {
-              dataChannel3 = channel;
-              dataChannel3.onmessage = onMessage3;
-            }
-          });
-          conn5.on('disconnect', (e) => console.log(e));
-          await conn5.connect(null);
-
-          //temp sensor
-          conn6.on('open', async (e) => {
-            console.log(dataChannel4);
-            dataChannel4 = await conn6.createDataChannel(label);
-            if (dataChannel4) {
-              dataChannel4.onmessage = onMessage4;
-            }
-          });
-          conn6.on('datachannel', (channel) => {
-            if (!dataChannel4) {
-              dataChannel4 = channel;
-              dataChannel4.onmessage = onMessage4;
-            }
-          });
-          conn6.on('disconnect', (e) => console.log(e));
-          await conn6.connect(null);
 
           startfnc();
 
@@ -392,6 +306,14 @@
 		data = {
 			id: 'mode', 
 			data: 'slam'
+		};
+		sendData(data);
+       };
+
+       function sendDataSlamSaveMap () {
+		data = {
+			id: 'slam', 
+			data: 'save_map'
 		};
 		sendData(data);
        };
@@ -891,63 +813,29 @@
         };
 
         document.querySelector("#roomIdInput").value = roomId;
-/*
-        let dataChannel1 = null; // A1
-        let dataChannel2 = null; // sensor1
-        let dataChannel3 = null; // sensor2
-        let dataChannel4 = null; // temp sensor
-*/
 
-        var s1_val = null;
-        var s2_val = null;
-        var tmp_val = null;
-        var ptz_val = null;
 	var A1_Status = null;
 
         let autoMotion = null;
 
         function hyoji()
         {
-                L0 = "*** a1 state ***" + "\n";
+                L0 = "\n*** A1 Status ***\n";
 
                 if (conn0)voice = 1;
                 else voice = 0;
-                Lv = "voice:" + voice + "\n";
+		
+                L1 = "voice:" + voice + "\n";
 
                 if (dataChannel1)A1_Control = 1;
                 else A1_Control = 0;
-                L1 = "control:" + A1_Control + "\n";
+                L2 = "control:" + A1_Control + "\n";
 
-                if (dataChannel11)PTZ_Control = 1;
-                else PTZ_Control = 0;
-                PTZ = "ptz control:" + PTZ_Control + "\n";
+                L3 = "Speed Level:" + SPEED_LEVEL + "\n";
 
-                SP = "Speed Level:" + SPEED_LEVEL + "\n";
-
-                if (dataChannel2)sensor1 = 1;
-                else sensor1 = 0;
-                L2 = "sensor1:" + sensor1 + "\n";
-
-                if (dataChannel3)sensor2 = 1;
-                else sensor2 = 0;
-                L3 = "sensor2:" + sensor2 + "\n";
-
-                if (dataChannel4)tmp_sensor = 1;
-                else tmp_sensor = 0;
-                L4 = "tmp sensor:" + tmp_sensor + "\n";
-
-                L5 = "\n" + "*** sensor value ***" + "\n";
-
-                L6 = "sensor1:" + s1_val + "\n";
-                L7 = "sensor2:" + s2_val + "\n";
-                L8 = "tmp sensor:" + tmp_val + "\n";
-
-                L9 = "auto motion:" + autoMotion + "\n";
-
-                L10 = "ptz val:" + ptz_val + "\n";
-
-		L11 = "\n*** A1 Status ***\n";
-		L12 = A1_Status + "\n";
+                L4 = "auto motion:" + autoMotion + "\n";
+		
+		L5 = A1_Status + "\n";
 
                 if (autoMotion == "rotate_r")
                 {
@@ -969,8 +857,8 @@
                         console.log("rotate l");
                 }
 
-                document.querySelector("#messages").value = L0 + Lv + L1 + PTZ + SP + L2 + L3 + L4 + L5 + L6 + L7 + L8 + L9 + L10 + L11 + L12;
-        }
+                document.querySelector("#messages").value = L0 + L1 + L2 + L3 + L4 + L5;        
+	}
 
 	let face_up = 0;
 	let count = 0;
@@ -1017,27 +905,6 @@
         {
                 setInterval("hyoji()",300);
                 setInterval("interval2()",3000);
-        }
-
-        function onMessage2(e) {
-                const moji = String.fromCharCode.apply(null, new Uint8Array(e.data))
-                s1_val = Number(moji);
-        }
-
-        function onMessage3(e) {
-                const moji = String.fromCharCode.apply(null, new Uint8Array(e.data))
-                s2_val = Number(moji);
-        }
-
-        function onMessage4(e) {
-                const moji = String.fromCharCode.apply(null, new Uint8Array(e.data))
-                tmp_val = Number(moji);
-        }
-
-        function onMessage11(e) {
-                const moji = String.fromCharCode.apply(null, new Uint8Array(e.data))
-                //ptz_val = Number(moji);
-                ptz_val = moji;
         }
 
         function onMessage1(e) {
