@@ -57,6 +57,8 @@
                         <button onclick="sendDataModeAmcl();"class="box">mode amcl</button>
                         <button onclick="sendDataModeSlam();"class="box">mode slam</button>
                         <button onclick="sendDataSlamSaveMap();"class="box">save map</button>
+                        <button onclick="sendDataSaveWaypoints();"class="box">save waypoints</button>
+                        <button onclick="sendDataLoadWaypoints();"class="box">load waypoints</button>
                         　Auto
                         <select id="auto-motion" onChange="onChangeAutoMotion();">
                           <option value="none">none</option>
@@ -318,6 +320,23 @@
 		sendData(data);
        };
 
+       function sendDataSaveWaypoints () {
+		data = {
+			id: 'nav', 
+			data: 'save_wp'
+		};
+		sendData(data);
+       };
+
+       function sendDataLoadWaypoints () {
+		data = {
+			id: 'nav', 
+			data: 'load_wp'
+		};
+		sendData(data);
+       };
+
+
 	// id
 	// 1. velocity(vx, vy, vr)
 	// 2. slam 1: open, 2: clear map, 3: save map
@@ -485,6 +504,27 @@
                         sendData(data);
                         console.log("ptz zoom out");
                 }
+
+		// focus right 
+                if (event.keyCode == 86){
+			const data = {
+					id: 'ptz', 
+					data: 'focus_right'
+				     };
+                        sendData(data);
+                        console.log("focus right");
+                }
+
+		// focus left 
+                if (event.keyCode == 67){
+			const data = {
+					id: 'ptz', 
+					data: 'focus_left'
+				     };
+                        sendData(data);
+                        console.log("focus left");
+                }
+
 
 
                 //speed change
