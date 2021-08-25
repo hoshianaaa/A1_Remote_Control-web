@@ -59,6 +59,11 @@
                         <button onclick="sendDataSlamSaveMap();"class="box">save map</button>
                         <button onclick="sendDataSaveWaypoints();"class="box">save waypoints</button>
                         <button onclick="sendDataLoadWaypoints();"class="box">load waypoints</button>
+                        <button onclick="sendDataWallMode();"class="box">wall mode</button>
+                        <button onclick="sendDataAddWall();"class="box">add wall</button>
+                        <button onclick="sendDataDelWall();"class="box">delete wall</button>
+                        <button onclick="sendDataClearWall();"class="box">clear wall</button>
+                        <button onclick="sendDataSaveWall();"class="box">save wall</button>
                         　Auto
                         <select id="auto-motion" onChange="onChangeAutoMotion();">
                           <option value="none">none</option>
@@ -329,6 +334,45 @@
 		sendData(data);
        };
 
+       function sendDataWallMode () {
+		data = {
+			id: 'nav', 
+			data: 'wall_mode'
+		};
+		sendData(data);
+       };
+
+       function sendDataAddWall () {
+		data = {
+			id: 'nav', 
+			data: 'add_wall'
+		};
+		sendData(data);
+       };
+
+       function sendDataDelWall () {
+		data = {
+			id: 'nav', 
+			data: 'del_wall'
+		};
+		sendData(data);
+       };
+
+       function sendDataClearWall () {
+		data = {
+			id: 'nav', 
+			data: 'clear_wall'
+		};
+		sendData(data);
+       };
+
+       function sendDataSaveWall () {
+		data = {
+			id: 'nav', 
+			data: 'save_wall'
+		};
+		sendData(data);
+       };
 
 	// id
 	// 1. velocity(vx, vy, vr)
