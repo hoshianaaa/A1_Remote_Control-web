@@ -64,6 +64,8 @@
                         <button onclick="sendDataDelWall();"class="box">delete wall</button>
                         <button onclick="sendDataClearWall();"class="box">clear wall</button>
                         <button onclick="sendDataSaveWall();"class="box">save wall</button>
+                        <button onclick="sendDataConnectWifi();"class="box">connect wifi</button>
+                        <button onclick="sendDataConnectLTE();"class="box">connect LTE</button>
                         　Auto
                         <select id="auto-motion" onChange="onChangeAutoMotion();">
                           <option value="none">none</option>
@@ -370,6 +372,22 @@
 		data = {
 			id: 'nav', 
 			data: 'save_wall'
+		};
+		sendData(data);
+       };
+
+       function sendDataConnectWifi () {
+		data = {
+			id: 'network', 
+			data: 'connect_wifi'
+		};
+		sendData(data);
+       };
+
+       function sendDataConnectLTE () {
+		data = {
+			id: 'network', 
+			data: 'connect_LTE'
 		};
 		sendData(data);
        };
