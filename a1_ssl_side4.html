@@ -52,8 +52,10 @@
                         <button onclick="sendDataModeAmcl();"class="box">mode amcl</button>
                         <button onclick="sendDataModeSlam();"class="box">mode slam</button>
                         <button onclick="sendDataSlamSaveMap();"class="box">save map</button>
+
                         <button onclick="sendDataSaveWaypoints();"class="box">save waypoints</button>
                         <button onclick="sendDataLoadWaypoints();"class="box">load waypoints</button>
+
                         <button onclick="sendDataWallMode();"class="box">wall mode</button>
                         <button onclick="sendDataAddWall();"class="box">add wall</button>
                         <button onclick="sendDataDelWall();"class="box">delete wall</button>
@@ -61,6 +63,29 @@
                         <button onclick="sendDataSaveWall();"class="box">save wall</button>
                         <button onclick="sendDataConnectWifi();"class="box">connect wifi</button>
                         <button onclick="sendDataConnectLTE();"class="box">connect LTE</button>
+
+                        <button onclick="sendDataWallTargetUp();"class="box">wall target up</button>
+                        <button onclick="sendDataWallTargetDown();"class="box">wall target down</button>
+
+                        <button onclick="sendDataSwitchInitWp();"class="box">switch init/wp setting</button>
+                        <button onclick="sendDataAddWp();"class="box">add waypoint</button>
+                        <button onclick="sendDataDeleteWp();"class="box">delete waypoint</button>
+                        <button onclick="sendDataClearWp();"class="box">clear waypoints</button>
+                        <button onclick="sendDataResetWpPos();"class="box">reset wp pos</button>
+                        <button onclick="sendDataTargetWpUp();"class="box">wp target up</button>
+                        <button onclick="sendDataTargetWpDown();"class="box">wp target down</button>
+
+                        <button onclick="sendDataWpMode();"class="box">wp mode</button>
+
+                        <button onclick="sendDataA1Mode();"class="box">a1 mode</button>
+
+                        <button onclick="sendDataNavStart();"class="box">navigation start</button>
+                        <button onclick="sendDataNavStartLoop();"class="box">navigation start loop</button>
+                        <button onclick="sendDataNavStop();"class="box">navigation stop</button>
+
+                        <button onclick="sendDataCameraUp();"class="box">camera up</button>
+                        <button onclick="sendDataCameraDown();"class="box">camera down</button>
+
 			</p>
 			<p>
                         <audio id="remote-audio" autoplay controls style="height:40px;"></audio>
@@ -94,6 +119,9 @@
 	//if x > x1 y = ax + b
 	//if x < -x1 y = ax - b
 	//if x >= -x1 && x <= x1 y = 0
+	
+	// robot, wp
+	MODE = "robot"
 
 	class Remapper {
 	      constructor (x1, x2, y1, y2) {
@@ -380,6 +408,137 @@
 		sendData(data);
        };
 
+       function sendDataWallTargetUp () {
+		data = {
+			id: 'p', 
+			data: 'target_up'
+		};
+		sendData(data);
+       };
+
+       function sendDataWallTargetDown () {
+		data = {
+			id: 'p', 
+			data: 'target_down'
+		};
+		sendData(data);
+       };
+
+       function sendDataSwitchInitWp () {
+		data = {
+			id: 'init_pos',
+			data: 'init_pos'
+		};
+		sendData(data);
+       };
+
+       function sendDataAddWp () {
+		data = {
+			id: 'p',
+			data: 'add'
+		};
+		sendData(data);
+       };
+
+       function sendDataDeleteWp () {
+		data = {
+			id: 'p', 
+			data: 'del'
+		};
+		sendData(data);
+       };
+
+
+       function sendDataClearWp () {
+		data = {
+			id: 'p', 
+			data: 'clear'
+		};
+		sendData(data);
+       };
+
+       function sendDataResetWpPos () {
+		data = {
+			id: 'p', 
+			data: 'reset'
+		};
+		sendData(data);
+       };
+
+       function sendDataTargetWpUp () {
+		data = {
+			id: 'p', 
+			data: 'target_up'
+		};
+		sendData(data);
+       };
+
+       function sendDataTargetWpDown () {
+		data = {
+			id: 'p', 
+			data: 'target_down'
+		};
+		sendData(data);
+       };
+
+       function sendDataWpMode () {
+		data = {
+			id: 'cam', 
+			data: 'wp'
+		};
+		sendData(data);
+	       	MODE = "wp"
+       };
+
+       function sendDataA1Mode () {
+		data = {
+			id: 'cam', 
+			data: 'robot'
+		};
+		sendData(data);
+	       	MODE = "robot"
+       };
+
+       function sendDataNavStart () {
+		data = {
+			id: 'n', 
+			data: 'start'
+		};
+		sendData(data);
+       };
+
+       function sendDataNavStartLoop () {
+		data = {
+			id: 'n', 
+			data: 'start_loop'
+		};
+		sendData(data);
+       };
+
+       function sendDataNavStop () {
+		data = {
+			id: 'n', 
+			data: 'stop'
+		};
+		sendData(data);
+       };
+
+       function sendDataCameraUp () {
+		data = {
+			id: 'cam', 
+			data: 'up'
+		};
+		sendData(data);
+       };
+
+       function sendDataCameraDown () {
+		data = {
+			id: 'cam', 
+			data: 'down'
+		};
+		sendData(data);
+       };
+
 	// id
 	// 1. velocity(vx, vy, vr)
 	// 2. slam 1: open, 2: clear map, 3: save map
@@ -390,70 +549,151 @@
         //keyボード入力でA1を操作
         window.addEventListener('keydown', function(event) {
 
-                console.log(event.keyCode);
-                //e 69  d 68  f 70  s 83  j 74  l 76
-                //0 48
-		if (event.keyCode == 71){
-			const data = {
-					id: 'test',
-					data: [5, 1.3]
-				     };
-			sendData(data);
+		mode = 'v';
+		if (MODE == "wp"){
+			mode = 'w';
 		}
-		// e
-                if (event.keyCode == 69){
-			const data = {
-					id: 'v', 
-					data: [SPEED_LEVEL/10, 0.0, 0.0]
-				     };
-                        sendData(data);
-                        console.log("forward");
-                }
-		// s
-                if (event.keyCode == 83){
-			const data = {
-					id: 'v', 
-					data: [0.0, SPEED_LEVEL/10, 0.0]
-				     };
-                        sendData(data);
-                        console.log("left");
-                }
-		// d
-                if (event.keyCode == 68){
-			const data = {
-					id: 'v', 
-					data: [-SPEED_LEVEL/10, 0.0, 0.0]
-				     };
-                        sendData(data);
-                        console.log("back");
-                }
-		// f
-                if (event.keyCode == 70){
-			const data = {
-					id: 'v',
-					data: [0.0, -SPEED_LEVEL/10, 0.0]
-				     };
-                        sendData(data);
-                        console.log("right");
-                }
-		// j
-                if (event.keyCode == 74){
-			const data = {
-					id: 'v',
-					data: [0.0, 0.0, -SPEED_LEVEL/10]
-				     };
-			sendData(data);
-                        console.log("rotate left");
-                }
-		// l
-                if (event.keyCode == 76){
-			const data = {
-					id: 'v',
-					data: [0.0, 0.0, SPEED_LEVEL/10]
-				     };
-                        sendData(data);
-                        console.log("rotate right");
-                }
+
+
+		if (MODE == "v")
+		{	
+			console.log(event.keyCode);
+			//e 69  d 68  f 70  s 83  j 74  l 76
+			//0 48
+			if (event.keyCode == 71){
+				const data = {
+						id: 'test',
+						data: [5, 1.3]
+					     };
+				sendData(data);
+			}
+			// e
+			if (event.keyCode == 69){
+				const data = {
+						id: mode, 
+						data: [SPEED_LEVEL/10, 0.0, 0.0]
+					     };
+				sendData(data);
+				console.log("forward");
+			}
+			// s
+			if (event.keyCode == 83){
+				const data = {
+						id: mode, 
+						data: [0.0, SPEED_LEVEL/10, 0.0]
+					     };
+				sendData(data);
+				console.log("left");
+			}
+			// d
+			if (event.keyCode == 68){
+				const data = {
+						id: mode, 
+						data: [-SPEED_LEVEL/10, 0.0, 0.0]
+					     };
+				sendData(data);
+				console.log("back");
+			}
+			// f
+			if (event.keyCode == 70){
+				const data = {
+						id: mode,
+						data: [0.0, -SPEED_LEVEL/10, 0.0]
+					     };
+				sendData(data);
+				console.log("right");
+			}
+			// j
+			if (event.keyCode == 74){
+				const data = {
+						id: mode,
+						data: [0.0, 0.0, -SPEED_LEVEL/10]
+					     };
+				sendData(data);
+				console.log("rotate left");
+			}
+			// l
+			if (event.keyCode == 76){
+				const data = {
+						id: mode,
+						data: [0.0, 0.0, SPEED_LEVEL/10]
+					     };
+				sendData(data);
+				console.log("rotate right");
+			}
+		}
+
+		if (mode == "w")
+		{	
+			speed = 1
+			console.log(event.keyCode);
+			//e 69  d 68  f 70  s 83  j 74  l 76
+			//0 48
+			if (event.keyCode == 71){
+				const data = {
+						id: 'test',
+						data: [5, 1.3]
+					     };
+				sendData(data);
+			}
+			// e
+			if (event.keyCode == 69){
+				const data = {
+						id: mode, 
+						data: [-speed, 0.0, 0.0]
+					     };
+				sendData(data);
+				console.log("forward");
+			}
+			// s
+			if (event.keyCode == 83){
+				const data = {
+						id: mode, 
+						data: [0.0, -speed, 0.0]
+					     };
+				sendData(data);
+				console.log("left");
+			}
+			// d
+			if (event.keyCode == 68){
+				const data = {
+						id: mode, 
+						data: [speed, 0.0, 0.0]
+					     };
+				sendData(data);
+				console.log("back");
+			}
+			// f
+			if (event.keyCode == 70){
+				const data = {
+						id: mode,
+						data: [0.0, speed, 0.0]
+					     };
+				sendData(data);
+				console.log("right");
+			}
+			// j
+			if (event.keyCode == 74){
+				const data = {
+						id: mode,
+						data: [0.0, 0.0, speed]
+					     };
+				sendData(data);
+				console.log("rotate left");
+			}
+			// l
+			if (event.keyCode == 76){
+				const data = {
+						id: mode,
+						data: [0.0, 0.0, -speed]
+					     };
+				sendData(data);
+				console.log("rotate right");
+			}
+		}
+
+
+
 		// i
                 if (event.keyCode == 73){
 			const data = {
@@ -802,36 +1042,8 @@
 		}
 
 
-
-	        if ( gamepadAPI.axesStatus[6] != last_axis_status_6) {
-	      		if (  gamepadAPI.axesStatus[6] == -1) 
-			      {
-					const data = {
-							id: 'cam',
-							data: 'robot'
-					};
-					sendData(data);
-					last_axis_status_6 = -1;
-
-			      }
-	      		if (  gamepadAPI.axesStatus[6] == 1) 
-
-			 	{
-					const data = {
-							id: 'cam',
-							data: 'wp'
-					};
-					sendData(data);
-					last_axis_status_6 = 1;
-
-			      	}
-
-	        }
-
-
-
 	        // A1 vel(x, y, th)
-	        if (gamepadAPI.axesStatus[6] == -1) {
+	        if (MODE == "robot") {
 	          if (Math.abs(gamepadAPI.axesStatus[0]) > MIN_INPUT || 
 		      Math.abs(gamepadAPI.axesStatus[1]) > MIN_INPUT ||
 		      Math.abs(gamepadAPI.axesStatus[5]) > MIN_INPUT) { 
@@ -845,7 +1057,7 @@
 	        }
 
 	        // WP vel(x, y, th)
-	        if (gamepadAPI.axesStatus[6] == 1) {
+	        if (MODE == "wp") {
 		  if (Math.abs(gamepadAPI.axesStatus[0]) > MIN_INPUT ||
 		      Math.abs(gamepadAPI.axesStatus[1]) > MIN_INPUT ||
 		      Math.abs(gamepadAPI.axesStatus[5]) > MIN_INPUT) {
