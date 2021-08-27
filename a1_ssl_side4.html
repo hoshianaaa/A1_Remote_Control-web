@@ -47,11 +47,6 @@
                         <p>Robot ID
                         <input id="roomIdInput" type="text" value=""></input>
                         <button onclick="startConn();"class="box">connect</button>
-                        <button onclick="disconnect();"class="box">disconnect</button>
-                        <button onclick="startConnVoice();"class="box">voice on</button>
-                        <button onclick="disconnectVoice();"class="box">voice off</button>
-                        <button onclick="sendDataRebootRaspi1();"class="box">reboot 1</button>
-                        <button onclick="sendDataRebootRaspi2();"class="box">reboot 2</button>
                         <button onclick="sendDataSafetyOn();"class="box">safety on</button>
                         <button onclick="sendDataSafetyOff();"class="box">safety off</button>
                         <button onclick="sendDataModeAmcl();"class="box">mode amcl</button>
@@ -66,17 +61,10 @@
                         <button onclick="sendDataSaveWall();"class="box">save wall</button>
                         <button onclick="sendDataConnectWifi();"class="box">connect wifi</button>
                         <button onclick="sendDataConnectLTE();"class="box">connect LTE</button>
-                        　Auto
-                        <select id="auto-motion" onChange="onChangeAutoMotion();">
-                          <option value="none">none</option>
-                          <option value="rotate_r">rotate_r</option>
-                          <option value="rotate_l">rotate_l</option>
-                          <option value="up_down">up_down</option>
-                        </select>
-                        </p>
-                        <p>
+			</p>
+			<p>
                         <audio id="remote-audio" autoplay controls style="height:40px;"></audio>
-                        </p>
+			</p>
                 </div>
                 <div class="left">
                         <div class="center">
