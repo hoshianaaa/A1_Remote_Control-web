@@ -59,8 +59,7 @@
                         <button onclick="sendDataNavStartLoop();"class="box">navigation start loop</button>
                         <button onclick="sendDataNavStop();"class="box">navigation stop</button>
                         <button onclick="sendDataSwitchInitWp();"class="box">init pos mode</button>
-                        <button onclick="sendDataCameraUp();"class="box">camera up</button>
-                        <button onclick="sendDataCameraDown();"class="box">camera down</button>
+                        <button onclick="sendDataAddWp();"class="box">init pos set</button>
 
 			wp setting
                         <button onclick="sendDataWpMode();"class="box">wp mode</button>
@@ -81,9 +80,13 @@
                         <button onclick="sendDataSaveWall();"class="box">save wall</button>
                         <button onclick="sendDataWallTargetUp();"class="box">wall target up</button>
                         <button onclick="sendDataWallTargetDown();"class="box">wall target down</button>
+
 			others
                         <button onclick="sendDataConnectWifi();"class="box">connect wifi</button>
                         <button onclick="sendDataConnectLTE();"class="box">connect LTE</button>
+                        <button onclick="sendDataCameraUp();"class="box">camera up</button>
+                        <button onclick="sendDataCameraDown();"class="box">camera down</button>
+
 			</p>
 
 			<p>
@@ -433,6 +436,16 @@
 	       	MODE = "wp";
        };
 
+       function sendDataInitPosSet () {
+		data = {
+			id: 'init_pos',
+			data: 'init_pos'
+		};
+		sendData(data);
+	       	MODE = "wp";
+       };
+
+
        function sendDataAddWp () {
 		data = {
 			id: 'p',
@@ -561,7 +574,7 @@
 		}
 
 
-		if (MODE == "v")
+		if (MODE == "robot")
 		{	
 			console.log(event.keyCode);
 			//e 69  d 68  f 70  s 83  j 74  l 76
@@ -581,6 +594,9 @@
 					     };
 				sendData(data);
 				console.log("forward");
+				console.log(data);
+
+
 			}
 			// s
 			if (event.keyCode == 83){
@@ -1215,6 +1231,23 @@
                 const moji = String.fromCharCode.apply(null, new Uint8Array(e.data))
 	        console.log("moji:",e.data)
                 A1_Status = moji;
+
+	      	const recv_data = JSON.parse(e.data);
+	        console.log("****** recv data ******")
+
+	        console.log("** navigation info **")
+	        console.log("mode:",recv_data.mode)
+	        console.log("safety:",recv_data.safety)
+	        console.log("map_save_time:",recv_data.map_save_time)
+
+	        console.log("** network info **")
+	        console.log("ssid:",recv_data.ssid)
+	        console.log("level:",recv_data.level)
+	        console.log("focus:",recv_data.focus)
+	        console.log("zoom:",recv_data.zoom)
+	        console.log("mac:",recv_data.mac)
+	        console.log("device:",recv_data.device)
+	        console.log("speed:",recv_data.speed)
         }
 
         function onChangeAutoMotion() {
