@@ -55,9 +55,9 @@
                         <button onclick="sendDataModeAmcl();"class="box">mode amcl</button>
                         <button onclick="sendDataModeSlam();"class="box">mode slam</button>
                         <button onclick="sendDataSlamSaveMap();"class="box">save map</button>
-                        <button onclick="sendDataNavStart();"class="box">navigation start</button>
-                        <button onclick="sendDataNavStartLoop();"class="box">navigation start loop</button>
-                        <button onclick="sendDataNavStop();"class="box">navigation stop</button>
+                        <button onclick="sendDataNavStart();"class="box" >navigation start</button>
+			<button onclick="sendDataNavStartLoop();"class="box" style="background-color:Aquamarine;">navigation start loop</button>
+			<button onclick="sendDataNavStop();"class="box" style="background-color:OrangeRed;"><span style="color:#FFFFFF">navigation stop</span></button>
                         <button onclick="sendDataSwitchInitWp();"class="box">init pos mode</button>
                         <button onclick="sendDataAddWp();"class="box">init pos set</button>
 
@@ -86,11 +86,15 @@
                         <button onclick="sendDataConnectLTE();"class="box">connect LTE</button>
                         <button onclick="sendDataCameraUp();"class="box">camera up</button>
                         <button onclick="sendDataCameraDown();"class="box">camera down</button>
+                        <button onclick="sendDataBirdViewStart();"class="box">bird_view start</button>
+                        <button onclick="sendDataBirdViewStop();"class="box">bird_view stop</button>
 
 			</p>
 
 			<p>
                         <audio id="remote-audio" autoplay controls style="height:40px;"></audio>
+			Camera Gamma
+			<input type="range" id="gamma" name="gamma" min="0" max="100" step="10">
 			</p>
                 </div>
                 <div class="left">
@@ -155,9 +159,13 @@
         let SPEED_LEVEL = 2;
         const options = Ayame.defaultOptions;
         options.clientId = clientId ? clientId : options.clientId;
+        options.signalingKey = "GrEh4Woqsm3d9G3Fd_eO3DBKd_SuWZheutMzdvrK3P00qzLB";
+	      /*
         if (signalingKey) {
           options.signalingKey = signalingKey;
         }
+	      */
+	console.log("signalng key:", signalingKey);
         options.video.direction = 'recvonly';
         let conn0,conn1,conn2,conn3,conn4,conn5,conn6;
 
@@ -204,13 +212,14 @@
         const label = 'dataChannel';
         const startConn = async () => {
           options.video.codec = videoCodec;
-          conn1 = Ayame.connection(signalingUrl, roomId+"-1", options, true); // A1_controll
-          conn2 = Ayame.connection(signalingUrl, roomId+"-2", options, true); // main_monitor
-          conn3 = Ayame.connection(signalingUrl, roomId+"-3", options, true); // _monitor
-          conn8 = Ayame.connection(signalingUrl, roomId+"-8", options, true); // right_monitor
-          conn9 = Ayame.connection(signalingUrl, roomId+"-9", options, true); // left_monitor
+          conn1 = Ayame.connection(signalingUrl, "hoshianaaa@"+roomId+"-1", options, true); // A1_controll
+          conn2 = Ayame.connection(signalingUrl, "hoshianaaa@"+roomId+"-2", options, true); // main_monitor
+          conn3 = Ayame.connection(signalingUrl, "hoshianaaa@"+roomId+"-3", options, true); // _monitor
+          conn8 = Ayame.connection(signalingUrl, "hoshiaanaaa@"+roomId+"-8", options, true); // right_monitor
+          conn9 = Ayame.connection(signalingUrl, "hoshianaaaa@"+roomId+"-9", options, true); // left_monitor
 
           //A1
+		/*
           conn1.on('open', async (e) => {
             console.log(dataChannel1);
             dataChannel1 = await conn1.createDataChannel(label);
@@ -228,6 +237,7 @@
 
           startConnVoice();
           await delay(1000);
+	  */
 
           //main_monitor
           conn2.on('open', ({authzMetadata}) => console.log(authzMetadata));
@@ -237,6 +247,7 @@
           });
           await conn2.connect(null);
           await delay(1000);
+		/*
 
           //back_monitor
           conn3.on('open', ({authzMetadata}) => console.log(authzMetadata));
@@ -247,6 +258,8 @@
           await conn3.connect(null);
           await delay(1000);
 
+	  */
+
           //right_monitor
           conn8.on('open', ({authzMetadata}) => console.log(authzMetadata));
           conn8.on('disconnect', (e) => console.log(e));
@@ -255,6 +268,8 @@
           });
           await conn8.connect(null);
           await delay(1000);
+
+		/*
 
           //left_monitor
           conn9.on('open', ({authzMetadata}) => console.log(authzMetadata));
@@ -274,12 +289,13 @@
           //});
           //await conn10.connect(null);
           //await delay(1000);
+		*/
 
 
           startfnc();
 
-	url = '../ptz_camera.html?roomId=' + roomId + '-10';
-	url2 = '../map_camera.html?roomId=' + roomId + '-12';
+	url = '../ptz_camera.html?roomId=' + 'hoshianaaa@' + roomId + '-10';
+	url2 = '../map_camera.html?roomId=' + 'hoshianaaa@' + roomId + '-12';
 	console.log(url);
 	console.log(url2);
 	var Win1 = window.open(url, 'subWindow', 'width=' + 600 + ',height=' + 400 + '');
@@ -556,7 +572,91 @@
 			data: 'down'
 		};
 		sendData(data);
-       };
+      	};
+
+
+	function sendDataPTZInit () {
+		const data = {
+				id: 'ptz', 
+				data: 'init_pos'
+		};
+		sendData(data);
+		console.log("ptz init");
+	};
+
+	function sendDataPTZRight () {
+		const data = {
+				id: 'ptz', 
+				data: 'right'
+			     };
+		sendData(data);
+		console.log("ptz right");
+	};
+
+	function sendDataPTZLeft () {
+		const data = {
+				id: 'ptz', 
+				data: 'left'
+			     };
+		sendData(data);
+		console.log("ptz left");
+	};
+
+	function sendDataPTZUp () {
+		const data = {
+				id: 'ptz', 
+				data: 'up'
+			     };
+		sendData(data);
+		console.log("ptz up");
+	};
+
+	function sendDataPTZDown () {
+		const data = {
+				id: 'ptz', 
+				data: 'down'
+			     };
+		sendData(data);
+		console.log("ptz down");
+	};
+
+	function sendDataPTZZoomIn () {
+		const data = {
+				id: 'ptz', 
+				data: 'zoom_up'
+			     };
+		sendData(data);
+		console.log("ptz zoom in");
+	};
+
+	function sendDataPTZZoomOut () {
+		const data = {
+				id: 'ptz', 
+				data: 'zoom_down'
+		};
+		sendData(data);
+		console.log("ptz zoom out");
+       	};
+
+	function sendDataBirdViewStart () {
+		const data = {
+				id: 'bird_view', 
+				data: 'start'
+		};
+		sendData(data);
+		console.log("bird_view start");
+       	};
+
+	function sendDataBirdViewStop () {
+		const data = {
+				id: 'bird_view', 
+				data: 'stop'
+		};
+		sendData(data);
+		console.log("bird_view stop");
+       	};
+
+
 
 	// id
 	// 1. velocity(vx, vy, vr)
@@ -748,88 +848,32 @@
 
 		// space
                 if (event.keyCode == 32){
-			const data = {
-					id: 'ptz', 
-					data: 'init_pos'
-				     };
-                        sendData(data);
-                        console.log("ptz init");
+			sendDataPTZInit();
                 }
 		// up
                 if (event.keyCode == 38){
-			const data = {
-					id: 'ptz', 
-					data: 'up'
-				     };
-                        sendData(data);
-                        console.log("ptz up");
+			sendDataPTZUp();
                 }
 		// down
                 if (event.keyCode == 40){
-			const data = {
-					id: 'ptz', 
-					data: 'down'
-				     };
-                        sendData(data);
-                        console.log("ptz down");
+			sendDataPTZDown();
                 }
 		// left
                 if (event.keyCode == 37){
-			const data = {
-					id: 'ptz', 
-					data: 'left'
-				     };
-                        sendData(data);
-                        console.log("ptz left");
+			sendDataPTZLeft();
                 }
 		// right
                 if (event.keyCode == 39){
-			const data = {
-					id: 'ptz', 
-					data: 'right'
-				     };
-                        sendData(data);
-                        console.log("ptz right");
+			sendDataPTZRight();
                 }
 		// PgUp or z 
                 if (event.keyCode == 33 || event.keyCode == 90){
-			const data = {
-					id: 'ptz', 
-					data: 'zoom_up'
-				     };
-                        sendData(data);
-                        console.log("ptz zoom in");
+			sendDataPTZZoomIn();
                 }
 		// PgDn or x
                 if (event.keyCode == 34 || event.keyCode == 88){
-			const data = {
-					id: 'ptz', 
-					data: 'zoom_down'
-				     };
-                        sendData(data);
-                        console.log("ptz zoom out");
+			sendDataPTZZoomOut();
                 }
-
-		// focus right 
-                if (event.keyCode == 86){
-			const data = {
-					id: 'ptz', 
-					data: 'focus_right'
-				     };
-                        sendData(data);
-                        console.log("focus right");
-                }
-
-		// focus left 
-                if (event.keyCode == 67){
-			const data = {
-					id: 'ptz', 
-					data: 'focus_left'
-				     };
-                        sendData(data);
-                        console.log("focus left");
-                }
-
 
 
                 //speed change
@@ -1095,32 +1139,16 @@
 
 		// ptz move
 		if (gamepadAPI.axesStatus[9] == -1) {
-			data = {
-				id: 'ptz', 
-				data: 'up'
-	          	};
-			sendData(data);
+			sendDataPTZUp();
 		}
 		if (gamepadAPI.axesStatus[9] === (-1+2*2/7).toFixed(1)) {
-			data = {
-				id: 'ptz', 
-				data: 'down'
-	          	};
-			sendData(data);
+			sendDataPTZDown();
 		}
 		if (gamepadAPI.axesStatus[9] === (-1+4*2/7).toFixed(1)) {
-			data = {
-				id: 'ptz', 
-				data: 'left'
-	          	};
-			sendData(data);
+		  	sendDataPTZLeft();
 		}
 		if (gamepadAPI.axesStatus[9] === (-1+6*2/7).toFixed(1)) {
-			data = {
-				id: 'ptz', 
-				data: 'right'
-	          	};
-			sendData(data);
+		  	sendDataPTZRight();
 		}
 
 	  }}, 100);
@@ -1134,8 +1162,8 @@
         document.querySelector("#roomIdInput").value = roomId;
 
 	var A1_Status = null;
-
         let autoMotion = null;
+        let autoPTZ = 1;
 
         function hyoji()
         {
@@ -1181,8 +1209,44 @@
 
 	let face_up = 0;
 	let count = 0;
+
+	let INTERVAL_TIME = 100;
+	let autoPTZ_counter = 0;
+
+        function interval()
+	{
+		if (autoPTZ == 1)
+		{
+
+			let time = autoPTZ_counter * INTERVAL_TIME / 1000;
+			
+			if (time < 10)
+	      		{
+	      			sendDataPTZRight();
+	      		}
+	      		else if (time < 20)
+	      		{
+	      			sendDataPTZLeft();
+	      		}
+			else if (time < 30)
+	      		{
+				sendDataPTZUp();
+	      		}
+			else if (time < 40)
+	      		{
+				sendDataPTZDown();
+	      		}
+	      		else
+	      		{
+	      			autoPTZ_counter = 0;
+	      		}
+			autoPTZ_counter += 1;
+		}
+	}
+
         function interval2()
 	{
+			
 		if (autoMotion == "up_down")
 		{
 			if (count < 6)
@@ -1223,12 +1287,14 @@
         function startfnc()
         {
                 setInterval("hyoji()",300);
+                //setInterval("interval()",INTERVAL_TIME);
                 setInterval("interval2()",3000);
         }
 
         function onMessage1(e) {
 	        console.log("onmessage1:",e.data)
                 const moji = String.fromCharCode.apply(null, new Uint8Array(e.data))
+	      /*
 	        console.log("moji:",e.data)
                 A1_Status = moji;
 
@@ -1248,6 +1314,7 @@
 	        console.log("mac:",recv_data.mac)
 	        console.log("device:",recv_data.device)
 	        console.log("speed:",recv_data.speed)
+	      */
         }
 
         function onChangeAutoMotion() {

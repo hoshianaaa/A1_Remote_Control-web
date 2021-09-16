@@ -1,4 +1,5 @@
-const signalingUrl = 'ws://45.32.51.11:3000/signaling';
+//const signalingUrl = 'ws://45.32.51.11:3000/signaling';
+const signalingUrl = 'wss://ayame-labo.shiguredo.jp/signaling';
 let roomId = 'TS-A1-001';
 let clientId = null;
 let videoCodec = null;
@@ -21,7 +22,6 @@ function parseQueryString() {
     }
   }
 }
-
 
 parseQueryString();
 
